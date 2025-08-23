@@ -1259,6 +1259,153 @@
         /* --- Ende des Blocks für die Media-Query --- */
       }
 
+      /* Mobile Phones - NEUE MEDIA QUERY */
+      @media (max-width: 430px) {
+        /* Navigation mit Burger Menu */
+        .nav-container {
+          position: relative;
+        }
+
+        .burger-menu {
+          display: block;
+          width: 30px;
+          height: 25px;
+          position: relative;
+          cursor: pointer;
+          z-index: 1002;
+        }
+
+        .burger-menu span {
+          display: block;
+          width: 100%;
+          height: 3px;
+          background: var(--text-light);
+          margin-bottom: 5px;
+          transition: all 0.3s ease;
+          border-radius: 2px;
+        }
+
+        .burger-menu.active span:nth-child(1) {
+          transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .burger-menu.active span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .burger-menu.active span:nth-child(3) {
+          transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        .nav-links {
+          position: fixed;
+          top: 0;
+          right: -100%;
+          width: 80%;
+          height: 100vh;
+          background: var(--bg-light);
+          flex-direction: column;
+          padding: 5rem 2rem;
+          transition: right 0.3s ease;
+          box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links.active {
+          right: 0;
+        }
+
+        /* Hero Anpassungen */
+        .hero {
+          min-height: 100vh;
+          padding-top: 4rem;
+        }
+
+        .cube-container {
+          width: 150px;
+          height: 150px;
+          top: 25%; /* Weiter oben positioniert */
+        }
+
+        .cube .face {
+          width: 150px;
+          height: 150px;
+          font-size: 1.2rem;
+        }
+
+        /* Würfel-Positionen anpassen */
+        .face.front {
+          transform: rotateY(0deg) translateZ(75px);
+        }
+        .face.back {
+          transform: rotateY(180deg) translateZ(75px);
+        }
+        .face.right {
+          transform: rotateY(90deg) translateZ(75px);
+        }
+        .face.left {
+          transform: rotateY(-90deg) translateZ(75px);
+        }
+        .face.top {
+          transform: rotateX(90deg) translateZ(75px);
+        }
+        .face.bottom {
+          transform: rotateX(-90deg) translateZ(75px);
+        }
+
+        .hero-content {
+          margin-top: 320px; /* Mehr Abstand zum Würfel */
+        }
+
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .hero p {
+          font-size: 1rem;
+          padding: 0 1rem;
+        }
+
+        /* Chat Widget Fixes */
+        .chat-widget {
+          bottom: 20px;
+          right: 20px;
+        }
+
+        .chat-widget.closed {
+          width: 50px;
+          height: 50px;
+        }
+
+        .chat-widget.closed .chat-header {
+          width: 50px;
+          height: 50px;
+          padding: 0;
+          justify-content: center;
+        }
+
+        /* Bio Text Fix */
+        .bio-content p {
+          font-size: 0.9rem;
+          line-height: 1.5;
+          padding: 0 0.5rem;
+        }
+
+        /* Stats anpassen */
+        .bio-stats {
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .stat {
+          flex: 0 0 45%;
+        }
+      }
+
+      /* Burger Menu standardmäßig versteckt auf Desktop */
+      .burger-menu {
+        display: none;
+      }
+
       /* Scroll animations */
       .fade-in {
         opacity: 0;
@@ -1284,6 +1431,12 @@
           <a href="#videos">Videos</a>
           <a href="#blog">Blog</a>
           <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+        <!-- In der nav-container, nach nav-links -->
+        <div class="burger-menu" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
     </nav>
@@ -1658,6 +1811,28 @@ out->write( lv_text ).</code></pre>
     </div>
     <script>
       // Theme Toggle
+      // Burger Menu Toggle
+      function toggleMenu() {
+        const burger = document.querySelector(".burger-menu");
+        const navLinks = document.querySelector(".nav-links");
+
+        burger.classList.toggle("active");
+        navLinks.classList.toggle("active");
+
+        // Body scroll verhindern wenn Menu offen
+        document.body.style.overflow = navLinks.classList.contains("active")
+          ? "hidden"
+          : "auto";
+      }
+
+      // Menu schließen beim Klick auf einen Link
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.querySelector(".burger-menu").classList.remove("active");
+          document.querySelector(".nav-links").classList.remove("active");
+          document.body.style.overflow = "auto";
+        });
+      });
       function toggleTheme() {
         document.body.dataset.theme =
           document.body.dataset.theme === "dark" ? "" : "dark";
