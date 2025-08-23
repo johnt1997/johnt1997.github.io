@@ -1162,6 +1162,46 @@
         .hero h1 {
           font-size: 2.5rem;
         }
+
+        /* --- In den @media Block einfügen --- */
+
+        /* Titel im geschlossenen Button ausblenden */
+        .chat-widget.closed .header-title {
+          display: none;
+        }
+        .chat-widget.closed .chat-toggle-icon {
+          display: block; /* Stellt sicher, dass das Icon sichtbar bleibt */
+          font-size: 1.5rem;
+          color: white;
+          margin: auto; /* Zentriert das Icon */
+        }
+        /* Stellt den initialen Zustand des Icons als '+' dar */
+        .chat-widget.closed .chat-toggle-icon::before {
+          content: "🤖"; /* Roboter-Emoji als Icon, wenn geschlossen */
+        }
+
+        /* Chat-Fenster im geöffneten Zustand bildschirmfüllend machen */
+        .chat-widget:not(.closed) {
+          width: 100%;
+          height: 100%;
+          bottom: 0;
+          right: 0;
+          border-radius: 0; /* Keine abgerundeten Ecken im Vollbild */
+        }
+
+        /* Den inneren Aufbau anpassen */
+        .chat-widget:not(.closed) .chat-main-content {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .chat-widget:not(.closed) .chat-body {
+          flex-grow: 1; /* Sorgt dafür, dass der Chat-Verlauf den verfügbaren Platz füllt */
+          height: auto;
+        }
+
+        /* --- Ende des Blocks für die Media-Query --- */
       }
 
       /* Scroll animations */
@@ -1508,6 +1548,11 @@ out->write( lv_text ).</code></pre>
     <div id="ai-chat-widget" class="chat-widget">
       <div class="chat-header" onclick="toggleChat()">
         <span>🤖 ABAP Co-Pilot</span>
+        <span class="chat-toggle-icon">-</span>
+      </div>
+
+      <div class="chat-header" onclick="toggleChat()">
+        <span class="header-title">🤖 ABAP Co-Pilot</span>
         <span class="chat-toggle-icon">-</span>
       </div>
 
