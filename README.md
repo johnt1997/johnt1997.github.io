@@ -1,1 +1,1309 @@
-# johnt1997.github.io
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABAP Development Mastery | Professional Training</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #0ea5e9;
+        --primary-dark: #0284c7;
+        --secondary: #6366f1;
+        --bg-light: #ffffff;
+        --bg-dark: #0f172a;
+        --text-light: #1e293b;
+        --text-dark: #e2e8f0;
+        --card-light: #f8fafc;
+        --card-dark: #1e293b;
+        --border-light: #e2e8f0;
+        --border-dark: #334155;
+        --code-bg-light: #1e293b;
+        --code-bg-dark: #0f172a;
+      }
+
+      [data-theme="dark"] {
+        --bg-light: #0f172a;
+        --text-light: #e2e8f0;
+        --card-light: #1e293b;
+        --border-light: #334155;
+        --code-bg-light: #0f172a;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg-light);
+        color: var(--text-light);
+        line-height: 1.6;
+        overflow-x: hidden;
+        transition: all 0.3s ease;
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        z-index: 1000;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+      }
+
+      [data-theme="dark"] nav {
+        background: rgba(15, 23, 42, 0.8);
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: glow 3s ease-in-out infinite;
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          filter: brightness(1);
+        }
+        50% {
+          filter: brightness(1.2);
+        }
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: width 0.3s ease;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      /* Theme Toggle */
+      .theme-toggle {
+        background: var(--card-light);
+        border: 1px solid var(--border-light);
+        border-radius: 50px;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+      }
+
+      .theme-toggle:hover {
+        transform: rotate(180deg);
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 6rem 2rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(14, 165, 233, 0.1),
+          rgba(99, 102, 241, 0.1)
+        );
+      }
+
+      .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: slideInUp 1s ease;
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        opacity: 0.8;
+        margin-bottom: 2rem;
+        animation: slideInUp 1s ease 0.2s both;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: slideInUp 1s ease 0.4s both;
+      }
+
+      .btn {
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
+      }
+
+      .btn-secondary {
+        background: var(--card-light);
+        color: var(--text-light);
+        border: 2px solid var(--border-light);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        transform: translateY(-3px);
+      }
+
+      /* Floating Elements - Enhanced with more animation */
+      .floating-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .floating-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          rgba(14, 165, 233, 0.1),
+          rgba(99, 102, 241, 0.1)
+        );
+        animation: float 20s infinite ease-in-out, rotate 30s linear infinite;
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .floating-circle:nth-child(1) {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        right: -150px;
+        animation-delay: 0s;
+      }
+
+      .floating-circle:nth-child(2) {
+        width: 200px;
+        height: 200px;
+        bottom: -100px;
+        left: -100px;
+        animation-delay: 5s;
+      }
+
+      .floating-circle:nth-child(3) {
+        width: 150px;
+        height: 150px;
+        top: 50%;
+        right: 10%;
+        animation-delay: 10s;
+      }
+
+      .floating-circle:nth-child(4) {
+        width: 250px;
+        height: 250px;
+        top: 20%;
+        left: 5%;
+        animation-delay: 15s;
+      }
+
+      .floating-circle:nth-child(5) {
+        width: 100px;
+        height: 100px;
+        bottom: 10%;
+        right: 20%;
+        animation-delay: 2s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(30px, -30px) rotate(120deg);
+        }
+        66% {
+          transform: translate(-20px, 20px) rotate(240deg);
+        }
+      }
+
+      /* Sections */
+      section {
+        padding: 5rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      /* Course Cards */
+      .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .course-card {
+        background: var(--card-light);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        animation: cardPulse 5s ease-in-out infinite alternate;
+      }
+
+      @keyframes cardPulse {
+        0% {
+          box-shadow: 0 5px 15px rgba(14, 165, 233, 0.1);
+        }
+        100% {
+          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+        }
+      }
+
+      .course-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .course-card:hover {
+        transform: translateY(-10px) rotate(2deg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .course-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .course-level {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--primary);
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .course-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .course-description {
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+      }
+
+      .course-topics {
+        list-style: none;
+      }
+
+      .course-topics li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+      }
+
+      .course-topics li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-weight: bold;
+        animation: arrowBounce 1s infinite;
+      }
+
+      @keyframes arrowBounce {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(5px);
+        }
+      }
+
+      /* Bio Section - Made fancier with parallax and particles */
+      .bio-section {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .bio-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(14, 165, 233, 0.05),
+          rgba(99, 102, 241, 0.05)
+        );
+        z-index: -1;
+      }
+
+      .particle {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background: var(--primary);
+        border-radius: 50%;
+        opacity: 0.3;
+        animation: particleMove 10s linear infinite;
+      }
+
+      @keyframes particleMove {
+        0% {
+          transform: translateY(100vh);
+          opacity: 0.3;
+        }
+        100% {
+          transform: translateY(-100vh);
+          opacity: 0;
+        }
+      }
+
+      .bio-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 3rem;
+        align-items: center;
+        background: var(--card-light);
+        border-radius: 20px;
+        padding: 3rem;
+        border: 1px solid var(--border-light);
+        position: relative;
+        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+      }
+
+      .bio-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: white;
+        margin: 0 auto;
+        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.3);
+        animation: pulse 3s ease-in-out infinite,
+          rotateImage 20s linear infinite;
+      }
+
+      @keyframes rotateImage {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .bio-content h3 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        animation: textGlow 2s ease-in-out infinite;
+      }
+
+      @keyframes textGlow {
+        0%,
+        100% {
+          text-shadow: 0 0 5px var(--primary);
+        }
+        50% {
+          text-shadow: 0 0 15px var(--secondary);
+        }
+      }
+
+      .bio-stats {
+        display: flex;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .stat {
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .stat:hover {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        opacity: 0.7;
+      }
+
+      /* Code Editor - Enhanced with typing animation */
+      .code-editor {
+        background: var(--code-bg-light);
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .editor-header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .editor-title {
+        color: white;
+        font-weight: 600;
+      }
+
+      .editor-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .editor-btn {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .editor-btn:hover {
+        transform: scale(1.2);
+      }
+
+      .editor-btn.close {
+        background: #ff5f57;
+      }
+      .editor-btn.minimize {
+        background: #ffbd2e;
+      }
+      .editor-btn.maximize {
+        background: #28ca42;
+      }
+
+      .code-container {
+        padding: 2rem;
+        position: relative;
+      }
+
+      pre {
+        color: #e2e8f0;
+        font-family: "Fira Code", "Courier New", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .code-typing {
+        display: inline-block;
+        border-right: 2px solid #fff;
+        animation: blinkCursor 0.75s step-end infinite;
+      }
+
+      @keyframes blinkCursor {
+        from,
+        to {
+          border-color: transparent;
+        }
+        50% {
+          border-color: #fff;
+        }
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .copy-btn.copied {
+        background: #28ca42;
+        border-color: #28ca42;
+      }
+
+      /* Syntax Highlighting */
+      .keyword {
+        color: #ff79c6;
+      }
+      .string {
+        color: #f1fa8c;
+      }
+      .comment {
+        color: #6272a4;
+        font-style: italic;
+      }
+      .type {
+        color: #8be9fd;
+      }
+      .variable {
+        color: #50fa7b;
+      }
+
+      /* Interactive Code Box - New Feature */
+      .interactive-code {
+        margin-top: 2rem;
+        background: var(--card-light);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-light);
+      }
+
+      .interactive-code textarea {
+        width: 100%;
+        height: 200px;
+        background: var(--code-bg-light);
+        color: #e2e8f0;
+        font-family: "Fira Code", monospace;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        resize: vertical;
+      }
+
+      .run-btn {
+        margin-top: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .run-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+      }
+
+      .output {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--code-bg-light);
+        color: #e2e8f0;
+        border-radius: 10px;
+      }
+
+      /* Video Grid */
+      .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .video-card {
+        background: var(--card-light);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .video-card:hover {
+        transform: translateY(-5px) rotate(3deg);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .video-thumbnail {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .play-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .video-card:hover .play-icon {
+        transform: scale(1.1) rotate(360deg);
+        background: white;
+      }
+
+      .play-icon::after {
+        content: "▶";
+        color: var(--primary);
+        font-size: 1.5rem;
+        margin-left: 5px;
+      }
+
+      .video-info {
+        padding: 1.5rem;
+      }
+
+      .video-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .video-duration {
+        color: var(--primary);
+        font-size: 0.875rem;
+      }
+
+      /* Blog */
+      .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .blog-card {
+        background: var(--card-light);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+      }
+
+      .blog-card:hover {
+        transform: translateY(-5px) rotate(1deg);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .blog-header {
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        padding: 2rem;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .blog-category {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .blog-content {
+        padding: 1.5rem;
+      }
+
+      .blog-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .blog-excerpt {
+        opacity: 0.8;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+
+      .blog-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        opacity: 0.6;
+      }
+
+      .blog-code-snippet {
+        background: var(--code-bg-light);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+      }
+
+      .blog-code-snippet pre {
+        margin: 0;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--card-light);
+        border-top: 1px solid var(--border-light);
+        padding: 3rem 2rem;
+        text-align: center;
+        margin-top: 5rem;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .social-link:hover {
+        transform: translateY(-5px) rotate(360deg);
+        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+
+        .bio-container {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .bio-stats {
+          justify-content: center;
+        }
+
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+      }
+
+      /* Scroll animations */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <div class="logo">ABAP.dev</div>
+        <div class="nav-links">
+          <a href="#kurse">Kurse</a>
+          <a href="#about">Über mich</a>
+          <a href="#code">Code</a>
+          <a href="#videos">Videos</a>
+          <a href="#blog">Blog</a>
+          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+      </div>
+      <div class="hero-content">
+        <h1>ABAP Development Mastery</h1>
+        <p>
+          Von den Grundlagen bis zur Expertise – Ihr Weg zum ABAP-Profi.
+          Entdecken Sie interaktive Code-Trainer, animierte Lernmodule und
+          praxisnahe Beispiele!
+        </p>
+        <div class="cta-buttons">
+          <a href="#kurse" class="btn btn-primary">Kurse entdecken</a>
+          <a href="#contact" class="btn btn-secondary">Kontakt aufnehmen</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="kurse" class="fade-in">
+      <h2 class="section-title">Kurs-Programme</h2>
+      <div class="courses-grid">
+        <div class="course-card">
+          <span class="course-level">Einsteiger</span>
+          <h3 class="course-title">ABAP Fundamentals</h3>
+          <p class="course-description">
+            Der perfekte Einstieg in die ABAP-Entwicklung mit SAP, inklusive
+            interaktiver Übungen und animierter Erklärungen.
+          </p>
+          <ul class="course-topics">
+            <li>ABAP Syntax & Datentypen</li>
+            <li>Interne Tabellen & Strukturen</li>
+            <li>Modularisierung</li>
+            <li>Debugging Techniken</li>
+          </ul>
+        </div>
+        <div class="course-card">
+          <span class="course-level">Fortgeschritten</span>
+          <h3 class="course-title">ABAP Objects & Design Patterns</h3>
+          <p class="course-description">
+            Objektorientierte Programmierung und moderne Patterns mit
+            Live-Code-Editing und Simulations.
+          </p>
+          <ul class="course-topics">
+            <li>Klassen & Interfaces</li>
+            <li>MVC Pattern in ABAP</li>
+            <li>Exception Handling</li>
+            <li>Unit Testing</li>
+          </ul>
+        </div>
+        <div class="course-card">
+          <span class="course-level">Experte</span>
+          <h3 class="course-title">S/4HANA & CDS Views</h3>
+          <p class="course-description">
+            Moderne ABAP-Entwicklung für S/4HANA mit fortgeschrittenen
+            Animationen und interaktiven Diagrammen.
+          </p>
+          <ul class="course-topics">
+            <li>Core Data Services</li>
+            <li>ABAP RESTful Programming</li>
+            <li>Fiori Elements Integration</li>
+            <li>Performance Optimierung</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bio Section - Fancy Upgrade -->
+    <section id="about" class="bio-section fade-in">
+      <div class="bio-background"></div>
+      <div class="particle" style="left: 10%; animation-delay: 0s"></div>
+      <div class="particle" style="left: 30%; animation-delay: 2s"></div>
+      <div class="particle" style="left: 50%; animation-delay: 4s"></div>
+      <div class="particle" style="left: 70%; animation-delay: 6s"></div>
+      <div class="particle" style="left: 90%; animation-delay: 8s"></div>
+      <h2 class="section-title">Über Ihren Trainer</h2>
+      <div class="bio-container">
+        <div class="bio-image">👨‍💻</div>
+        <div class="bio-content">
+          <h3>Max Mustermann</h3>
+          <p>
+            Mit über 15 Jahren Erfahrung in der SAP-Entwicklung bringe ich
+            komplexe ABAP-Konzepte verständlich und praxisnah bei. Als
+            zertifizierter SAP-Berater habe ich in zahlreichen
+            S/4HANA-Transformationsprojekten gearbeitet und kenne die
+            Herausforderungen der modernen ABAP-Entwicklung aus erster Hand.
+            Meine Leidenschaft: Interaktive Lernwerkzeuge, die das Coden zum
+            Spaß machen!
+          </p>
+          <div class="bio-stats">
+            <div class="stat">
+              <div class="stat-number">500+</div>
+              <div class="stat-label">Teilnehmer geschult</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number">15+</div>
+              <div class="stat-label">Jahre Erfahrung</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number">50+</div>
+              <div class="stat-label">SAP-Projekte</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">Zufriedenheit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code Example Section - Added multiple examples and interactive box -->
+    <section id="code" class="fade-in">
+      <h2 class="section-title">Code Beispiele</h2>
+      <p>
+        Hier finden Sie praxisnahe ABAP-Code-Beispiele. Probieren Sie den
+        interaktiven Editor aus – schreiben Sie Code und simulieren Sie die
+        Ausführung!
+      </p>
+
+      <!-- Existing Code Editor with Typing Animation -->
+      <div class="code-editor">
+        <div class="editor-header">
+          <span class="editor-title">modern_abap_example.abap</span>
+          <div class="editor-buttons">
+            <button class="editor-btn close"></button>
+            <button class="editor-btn minimize"></button>
+            <button class="editor-btn maximize"></button>
+          </div>
+        </div>
+        <div class="code-container">
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code id="typing-code"></code></pre>
+        </div>
+      </div>
+
+      <!-- Another Code Example -->
+      <div class="code-editor" style="margin-top: 3rem">
+        <div class="editor-header">
+          <span class="editor-title">simple_loop.abap</span>
+          <div class="editor-buttons">
+            <button class="editor-btn close"></button>
+            <button class="editor-btn minimize"></button>
+            <button class="editor-btn maximize"></button>
+          </div>
+        </div>
+        <div class="code-container">
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code><span class="comment">* Einfaches Loop-Beispiel mit moderner Syntax</span>
+<span class="keyword">DATA</span>: lt_numbers <span class="keyword">TYPE TABLE OF</span> i.
+lt_numbers = <span class="keyword">VALUE</span> #( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
+
+<span class="keyword">DATA</span>(lv_sum) = <span class="keyword">REDUCE</span> i( INIT sum = 0 
+  <span class="keyword">FOR</span> num <span class="keyword">IN</span> lt_numbers 
+  <span class="keyword">NEXT</span> sum = sum + num ).
+
+out->write( |<span class="string">Summe: { lv_sum }</span>| ).</code></pre>
+        </div>
+      </div>
+
+      <!-- Interactive Code Box -->
+      <div class="interactive-code">
+        <h3>Interaktiver ABAP-Code-Trainer</h3>
+        <p>
+          Schreiben Sie ABAP-Code und klicken Sie auf "Ausführen" für eine
+          simulierte Ausgabe (einfache Syntax-Überprüfung).
+        </p>
+        <textarea id="code-input">
+* Ihr Code hier...
+DATA(lv_hello) = 'Hello ABAP!'.
+out->write( lv_hello ).</textarea
+        >
+        <button class="run-btn" onclick="runCode()">Ausführen</button>
+        <div class="output" id="code-output"></div>
+      </div>
+    </section>
+
+    <!-- Videos Section - Added example videos -->
+    <section id="videos" class="fade-in">
+      <h2 class="section-title">Lernvideos</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumbnail">
+            <div class="play-icon"></div>
+          </div>
+          <div class="video-info">
+            <h4 class="video-title">ABAP Basics Tutorial</h4>
+            <span class="video-duration">15:32</span>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumbnail">
+            <div class="play-icon"></div>
+          </div>
+          <div class="video-info">
+            <h4 class="video-title">CDS Views Deep Dive</h4>
+            <span class="video-duration">28:45</span>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumbnail">
+            <div class="play-icon"></div>
+          </div>
+          <div class="video-info">
+            <h4 class="video-title">Performance Tips</h4>
+            <span class="video-duration">12:10</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Section - Added 2 example entries with code -->
+    <section id="blog" class="fade-in">
+      <h2 class="section-title">Blog</h2>
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-header">
+            <span class="blog-category">ABAP Tips</span>
+          </div>
+          <div class="blog-content">
+            <h4 class="blog-title">Moderne ABAP Features nutzen</h4>
+            <p class="blog-excerpt">
+              Entdecken Sie, wie Sie mit Inline-Deklarationen und Expressions
+              Ihren Code sauberer machen. Hier ein kurzes Beispiel:
+            </p>
+            <div class="blog-code-snippet">
+              <pre><code><span class="comment">* Inline Declaration</span>
+<span class="keyword">DATA</span>(lv_text) = <span class="string">'Modern ABAP'</span>.
+out->write( lv_text ).</code></pre>
+            </div>
+            <div class="blog-meta">
+              <span>23.08.2025</span>
+              <span>5 min read</span>
+            </div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-header">
+            <span class="blog-category">SAP News</span>
+          </div>
+          <div class="blog-content">
+            <h4 class="blog-title">S/4HANA Migration Tricks</h4>
+            <p class="blog-excerpt">
+              Tipps zur reibungslosen Migration. Probieren Sie diesen
+              CDS-View-Code aus:
+            </p>
+            <div class="blog-code-snippet">
+              <pre><code><span class="keyword">@AbapCatalog.sqlViewName</span>: 'ZVIEW_TRAVEL'
+<span class="keyword">@EndUserText.label</span>: 'Travel View'
+<span class="keyword">define view</span> Z_Travel_View <span class="keyword">as select from</span> /dmo/travel {
+  travel_id,
+  agency_id,
+  total_price
+}</code></pre>
+            </div>
+            <div class="blog-meta">
+              <span>15.08.2025</span>
+              <span>7 min read</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2025 ABAP.dev - Alle Rechte vorbehalten</p>
+        <div class="social-links">
+          <a href="#" class="social-link">📘</a>
+          <a href="#" class="social-link">🐦</a>
+          <a href="#" class="social-link">📺</a>
+          <a href="#" class="social-link">💼</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Theme Toggle
+      function toggleTheme() {
+        document.body.dataset.theme =
+          document.body.dataset.theme === "dark" ? "" : "dark";
+        document.querySelector(".theme-toggle").textContent =
+          document.body.dataset.theme === "dark" ? "☀️" : "🌙";
+      }
+
+      // Copy Code
+      function copyCode(btn) {
+        const code = btn.parentElement.querySelector("pre code").innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          btn.classList.add("copied");
+          btn.textContent = "Copied!";
+          setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.textContent = "📋 Copy";
+          }, 2000);
+        });
+      }
+
+      // Typing Animation for first code example
+      const codeText = `* Modern ABAP mit CDS Views und ABAP RESTful Programming Model\nCLASS zcl_travel_processor DEFINITION\n  PUBLIC\n  FINAL\n  CREATE PUBLIC.\n\n  PUBLIC SECTION.\n    INTERFACES: if_oo_adt_classrun.\n    \n    TYPES: BEGIN OF ty_travel,\n             travel_id   TYPE /dmo/travel_id,\n             agency_id   TYPE /dmo/agency_id,\n             customer_id TYPE /dmo/customer_id,\n             total_price TYPE /dmo/total_price,\n             status      TYPE /dmo/travel_status,\n           END OF ty_travel.\n           \n    TYPES: tt_travel TYPE TABLE OF ty_travel.\n    \n    METHODS: process_travels\n      RETURNING\n        VALUE(rt_result) TYPE tt_travel.\n        \n  PRIVATE SECTION.\n    METHODS: calculate_discount\n      IMPORTING\n        iv_price TYPE /dmo/total_price\n      RETURNING\n        VALUE(rv_discounted) TYPE /dmo/total_price.\nENDCLASS.\n\nCLASS zcl_travel_processor IMPLEMENTATION.\n  METHOD if_oo_adt_classrun~main.\n    DATA(lt_travels) = process_travels( ).\n    \n    * Inline declaration und moderne String-Templates\n    out->write( |Processed { lines( lt_travels ) } travel records| ).\n    \n    * Verwendung von FOR-Expression\n    DATA(lv_total) = REDUCE /dmo/total_price( \n      INIT sum = 0\n      FOR travel IN lt_travels\n      NEXT sum = sum + travel-total_price ).\n      \n    out->write( |Total revenue: { lv_total CURRENCY = 'EUR' }| ).\n  ENDMETHOD.\n  \n  METHOD process_travels.\n    * CDS View Zugriff mit modernen Features\n    SELECT travel_id,\n           agency_id,\n           customer_id,\n           total_price,\n           overall_status AS status\n           FROM /dmo/i_travel\n           WHERE overall_status = 'A'\n           INTO TABLE @rt_result.\n           \n         * Moderne Iteration mit VALUE-Operator\n         rt_result = VALUE #( FOR travel IN rt_result (\n           travel_id   = travel-travel_id\n           agency_id   = travel-agency_id\n           customer_id = travel-customer_id\n           total_price = calculate_discount( travel-total_price )\n           status      = travel-status ) ).\n       ENDMETHOD.\n       \n       METHOD calculate_discount.\n         rv_discounted = COND #( \n           WHEN iv_price > 10000 THEN iv_price * '0.9'\n           WHEN iv_price > 5000  THEN iv_price * '0.95'\n           ELSE iv_price ).\n       ENDMETHOD.\n     ENDCLASS.`;
+      const typingElement = document.getElementById("typing-code");
+      let i = 0;
+      function typeCode() {
+        if (i < codeText.length) {
+          typingElement.innerHTML += codeText.charAt(i);
+          i++;
+          setTimeout(typeCode, 10); // Geschwindigkeit der Typ-Animation
+        } else {
+          typingElement.classList.remove("code-typing");
+        }
+      }
+      typingElement.classList.add("code-typing");
+      typeCode();
+
+      // Interactive Code Runner (Simple Simulation)
+      function runCode() {
+        const input = document.getElementById("code-input").value;
+        const output = document.getElementById("code-output");
+        // Simulierte Ausführung: Suche nach out->write und extrahiere String
+        const match = input.match(/out->write\(\s*(.*?)\s*\)/);
+        if (match) {
+          output.innerText =
+            "Simulierte Ausgabe: " + match[1].replace(/['|]/g, "");
+        } else {
+          output.innerText =
+            "Fehler: Keine gültige out->write-Anweisung gefunden.";
+        }
+      }
+
+      // Fade-in on scroll
+      const fadeElements = document.querySelectorAll(".fade-in");
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      });
+      fadeElements.forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>
