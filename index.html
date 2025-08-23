@@ -1,3 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABAP Development Mastery | Professional Training</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #0ea5e9;
+        --primary-dark: #0284c7;
+        --secondary: #6366f1;
+        --bg-light: #ffffff;
+        --bg-dark: #0f172a;
+        --text-light: #1e293b;
+        --text-dark: #e2e8f0;
+        --card-light: #f8fafc;
+        --card-dark: #1e293b;
+        --border-light: #e2e8f0;
+        --border-dark: #334155;
+        --code-bg-light: #1e293b;
+        --code-bg-dark: #0f172a;
+      }
+
+      [data-theme="dark"] {
+        --bg-light: #0f172a;
+        --text-light: #e2e8f0;
+        --card-light: #1e293b;
+        --border-light: #334155;
+        --code-bg-light: #0f172a;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg-light);
+        color: var(--text-light);
+        line-height: 1.6;
+        overflow-x: hidden;
+        transition: all 0.3s ease;
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        z-index: 1000;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--border-light);
         transition: all 0.3s ease;
       }
 
