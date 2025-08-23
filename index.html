@@ -1114,9 +1114,6 @@
 
       /* Responsive */
       @media (max-width: 768px) {
-        .nav-links {
-          display: none;
-        }
         .bio-content p {
           /* Setzt eine maximale Breite, damit der Text auf Tablets nicht zu lang wird */
           max-width: 550px;
@@ -1267,7 +1264,7 @@
         }
 
         .burger-menu {
-          display: block;
+          display: block !important;
           width: 30px;
           height: 25px;
           position: relative;
@@ -1308,6 +1305,7 @@
           padding: 5rem 2rem;
           transition: right 0.3s ease;
           box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+          display: flex !important;
         }
 
         .nav-links.active {
