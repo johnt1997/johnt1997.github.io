@@ -37,14 +37,11 @@
 
       /* --- ENDE: CSS zum Ersetzen --- */
 
-      .chat-widget.closed .chat-main-content {
-        display: none;
-      }
-
       .chat-header {
         background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
         padding: 1rem;
+        color: white;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
@@ -880,6 +877,14 @@
         z-index: 1;
       }
 
+      .cube:hover {
+        animation-play-state: paused;
+      }
+
+      .chat-widget {
+        bottom: 30px; /* statt 20px */
+      }
+
       .cube {
         width: 100%;
         height: 100%;
@@ -1112,7 +1117,28 @@
         .nav-links {
           display: none;
         }
+        .bio-content p {
+          /* Setzt eine maximale Breite, damit der Text auf Tablets nicht zu lang wird */
+          max-width: 550px;
 
+          /* Diese zwei Zeilen zentrieren den Paragraphen-Block selbst */
+          margin-left: auto !important;
+          margin-right: auto !important;
+
+          /* Diese Zeile zentriert den Text innerhalb des Blocks */
+          text-align: center !important;
+          overflow-x: hidden; /* Verhindert horizontales Überlaufen */
+          padding-left: 1rem; /* Fügt links etwas Innenabstand hinzu */
+          padding-right: 1rem; /* Fügt rechts etwas Innenabstand hinzu */
+        }
+
+        /* Innerhalb des @media (max-width: 768px) Blocks */
+        .bio-content p {
+          word-break: break-word;
+          hyphens: auto;
+          padding: 0 1rem;
+          font-size: 0.95rem; /* Etwas kleinere Schrift auf Mobile */
+        }
         /* In den @media Block einfügen */
         .bio-container {
           margin-top: 3rem; /* Fügt Abstand nach oben hinzu */
@@ -1165,19 +1191,47 @@
 
         /* --- In den @media Block einfügen --- */
 
-        /* Titel im geschlossenen Button ausblenden */
+        /* Im @media (max-width: 768px) Block */
+        .chat-widget.closed {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+        }
+
+        .chat-widget.closed .chat-header {
+          border-radius: 50%;
+          padding: 0;
+          width: 60px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .chat-widget.closed .header-title {
           display: none;
         }
+
         .chat-widget.closed .chat-toggle-icon {
-          display: block; /* Stellt sicher, dass das Icon sichtbar bleibt */
+          content: "🤖";
           font-size: 1.5rem;
-          color: white;
-          margin: auto; /* Zentriert das Icon */
         }
-        /* Stellt den initialen Zustand des Icons als '+' dar */
-        .chat-widget.closed .chat-toggle-icon::before {
-          content: "🤖"; /* Roboter-Emoji als Icon, wenn geschlossen */
+
+        /* Im @media (max-width: 768px) Block */
+        .hero {
+          min-height: auto;
+          padding-top: 8rem; /* Mehr Platz oben */
+        }
+
+        .hero-content {
+          margin-top: 250px; /* Platz für den Würfel */
+        }
+
+        /* Im @media (max-width: 768px) Block */
+        .code-container pre {
+          font-size: 0.75rem; /* Kleinere Schrift für bessere Lesbarkeit */
+          overflow-x: auto;
+          max-width: 100%;
         }
 
         /* Chat-Fenster im geöffneten Zustand bildschirmfüllend machen */
@@ -1187,6 +1241,7 @@
           bottom: 0;
           right: 0;
           border-radius: 0; /* Keine abgerundeten Ecken im Vollbild */
+          background: var(--card-light);
         }
 
         /* Den inneren Aufbau anpassen */
@@ -1281,7 +1336,7 @@
           <span class="course-level">Fortgeschritten</span>
           <h3 class="course-title">ABAP Objects & Design Patterns</h3>
           <p class="course-description">
-            Objektorientierte Programmierung und moderne Patterns mit
+            Objektorientierte Programmmierung und moderne Patterns mit
             Live-Code-Editing und Simulations.
           </p>
           <ul class="course-topics">
