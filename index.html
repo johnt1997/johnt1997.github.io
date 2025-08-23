@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ABAP Training in Wien| Von A bis Z</title>
+    <title>ABAP Development Mastery | Professional Training</title>
     <style>
       * {
         margin: 0;
@@ -11,20 +11,31 @@
         box-sizing: border-box;
       }
       /* AI Chat Widget Styles */
+      /* --- START: Ersetze den alten .chat-widget CSS-Block hiermit --- */
+
+      /* AI Chat Widget Styles - MOBILE OPTIMIZED */
       .chat-widget {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 400px;
-        max-width: 90%;
-        background: var(--card-light);
-        border: 1px solid var(--border-light);
-        border-radius: 15px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        width: 60px; /* Breite im geschlossenen Zustand */
+        height: 60px; /* Höhe im geschlossenen Zustand */
+        border-radius: 50%; /* Macht den Button rund */
         z-index: 1001;
         overflow: hidden;
         transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
       }
+
+      /* Stil für den geöffneten Zustand */
+      .chat-widget:not(.closed) {
+        width: 400px;
+        max-width: 90%;
+        height: auto; /* Höhe anpassen an Inhalt */
+        border-radius: 15px; /* Wieder eckig im offenen Zustand */
+      }
+
+      /* --- ENDE: CSS zum Ersetzen --- */
 
       .chat-widget.closed .chat-main-content {
         display: none;
@@ -1100,6 +1111,43 @@
       @media (max-width: 768px) {
         .nav-links {
           display: none;
+        }
+
+        /* In den @media Block einfügen */
+        .bio-container {
+          margin-top: 3rem; /* Fügt Abstand nach oben hinzu */
+        }
+
+        /* In den @media Block einfügen */
+        .cube-container {
+          width: 200px; /* Kleinerer Container */
+          height: 200px;
+        }
+
+        .cube .face {
+          width: 200px; /* Kleinere Seiten */
+          height: 200px;
+          font-size: 1.5rem; /* Kleinere Schrift */
+        }
+
+        /* Wichtig: Auch die 3D-Positionierung anpassen! */
+        .face.front {
+          transform: rotateY(0deg) translateZ(100px);
+        }
+        .face.back {
+          transform: rotateY(180deg) translateZ(100px);
+        }
+        .face.right {
+          transform: rotateY(90deg) translateZ(100px);
+        }
+        .face.left {
+          transform: rotateY(-90deg) translateZ(100px);
+        }
+        .face.top {
+          transform: rotateX(90deg) translateZ(100px);
+        }
+        .face.bottom {
+          transform: rotateX(-90deg) translateZ(100px);
         }
 
         .bio-container {
