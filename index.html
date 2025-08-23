@@ -10,7 +10,131 @@
         padding: 0;
         box-sizing: border-box;
       }
+      /* AI Chat Widget Styles */
+      .chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 400px;
+        max-width: 90%;
+        background: var(--card-light);
+        border: 1px solid var(--border-light);
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
 
+      .chat-widget.closed .chat-main-content {
+        display: none;
+      }
+
+      .chat-header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+      }
+
+      .chat-toggle-icon {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .chat-body {
+        padding: 1rem;
+        height: 300px;
+        overflow-y: auto;
+      }
+
+      .chat-message.bot {
+        background: rgba(14, 165, 233, 0.1);
+        padding: 0.75rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+      }
+
+      .chat-input-area {
+        border-top: 1px solid var(--border-light);
+        padding: 1rem;
+      }
+
+      .chat-toolbar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .toolbar-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-light);
+        background: var(--card-light);
+        color: var(--text-light);
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+      }
+
+      .toolbar-btn:hover {
+        border-color: var(--primary);
+      }
+
+      .toolbar-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .file-btn {
+        display: flex;
+        align-items: center;
+      }
+
+      #text-input-container textarea {
+        width: 100%;
+        height: 80px;
+        resize: none;
+        border: 1px solid var(--border-light);
+        border-radius: 10px;
+        padding: 0.5rem;
+        background: var(--bg-light);
+        color: var(--text-light);
+        font-family: inherit;
+      }
+
+      .chat-code-editor {
+        height: 120px;
+        background: var(--code-bg-light);
+        color: #e2e8f0;
+        font-family: "Fira Code", monospace;
+        padding: 1rem;
+        border-radius: 10px;
+        overflow-y: auto;
+        white-space: pre;
+      }
+
+      .send-btn {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.75rem;
+        border: none;
+        border-radius: 10px;
+        background: var(--secondary);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .send-btn:hover {
+        transform: scale(1.02);
+      }
       :root {
         --primary: #0ea5e9;
         --primary-dark: #0284c7;
@@ -624,12 +748,6 @@
         word-wrap: break-word;
       }
 
-      .code-typing {
-        display: inline-block;
-        border-right: 2px solid #fff;
-        animation: blinkCursor 0.75s step-end infinite;
-      }
-
       @keyframes blinkCursor {
         from,
         to {
@@ -639,7 +757,12 @@
           border-color: #fff;
         }
       }
-
+      /* ÄNDERE .code-typing ZU .scroll-typing.typing */
+      .scroll-typing.typing {
+        display: inline-block;
+        border-right: 2px solid #fff;
+        animation: blinkCursor 0.75s step-end infinite;
+      }
       .copy-btn {
         position: absolute;
         top: 1rem;
@@ -734,7 +857,70 @@
         gap: 2rem;
         margin-top: 2rem;
       }
+      /* 3D Cube Styles */
+      .cube-container {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        perspective: 1000px; /* Wichtig für die 3D-Tiefe */
+        z-index: 1;
+      }
 
+      .cube {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        animation: rotate-cube 20s infinite linear;
+      }
+
+      @keyframes rotate-cube {
+        from {
+          transform: rotateX(0deg) rotateY(0deg);
+        }
+        to {
+          transform: rotateX(360deg) rotateY(360deg);
+        }
+      }
+
+      .cube .face {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        background: rgba(14, 165, 233, 0.2);
+        border: 2px solid var(--primary);
+        backdrop-filter: blur(5px);
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+      }
+
+      /* Positionierung der einzelnen Würfelseiten im 3D-Raum */
+      .face.front {
+        transform: rotateY(0deg) translateZ(150px);
+      }
+      .face.back {
+        transform: rotateY(180deg) translateZ(150px);
+      }
+      .face.right {
+        transform: rotateY(90deg) translateZ(150px);
+      }
+      .face.left {
+        transform: rotateY(-90deg) translateZ(150px);
+      }
+      .face.top {
+        transform: rotateX(90deg) translateZ(150px);
+      }
+      .face.bottom {
+        transform: rotateX(-90deg) translateZ(150px);
+      }
       .video-card {
         background: var(--card-light);
         border-radius: 15px;
@@ -961,12 +1147,15 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="floating-elements">
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
+      <div class="cube-container">
+        <div class="cube">
+          <div class="face front">SELECT</div>
+          <div class="face back">CLASS</div>
+          <div class="face right">LOOP</div>
+          <div class="face left">DATA</div>
+          <div class="face top">CDS</div>
+          <div class="face bottom">TYPE</div>
+        </div>
       </div>
       <div class="hero-content">
         <h1>ABAP Development Mastery</h1>
@@ -1097,6 +1286,33 @@
         <div class="code-container">
           <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
           <pre><code id="typing-code"></code></pre>
+
+          <pre><code id="typing-code" class="scroll-typing" data-code="* Modern ABAP mit CDS Views und ABAP RESTful Programming Model
+          CLASS zcl_travel_processor DEFINITION PUBLIC FINAL CREATE PUBLIC.
+            PUBLIC SECTION.
+              INTERFACES if_oo_adt_classrun.
+              TYPES: BEGIN OF ty_travel,
+                       travel_id   TYPE /dmo/travel_id,
+                       agency_id   TYPE /dmo/agency_id,
+                       total_price TYPE /dmo/total_price,
+                     END OF ty_travel.
+              TYPES tt_travel TYPE TABLE OF ty_travel.
+              METHODS process_travels RETURNING VALUE(rt_result) TYPE tt_travel.
+          ENDCLASS.
+          
+          CLASS zcl_travel_processor IMPLEMENTATION.
+            METHOD if_oo_adt_classrun~main.
+              DATA(lt_travels) = process_travels( ).
+              out->write( |Processed { lines( lt_travels ) } travel records| ).
+            ENDMETHOD.
+          
+            METHOD process_travels.
+              SELECT travel_id, agency_id, total_price
+                     FROM /dmo/i_travel
+                     WHERE overall_status = 'A'
+                     INTO TABLE @rt_result.
+            ENDMETHOD.
+          ENDCLASS."></code></pre>
         </div>
       </div>
 
@@ -1112,15 +1328,16 @@
         </div>
         <div class="code-container">
           <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
-          <pre><code><span class="comment">* Einfaches Loop-Beispiel mit moderner Syntax</span>
-<span class="keyword">DATA</span>: lt_numbers <span class="keyword">TYPE TABLE OF</span> i.
-lt_numbers = <span class="keyword">VALUE</span> #( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
 
-<span class="keyword">DATA</span>(lv_sum) = <span class="keyword">REDUCE</span> i( INIT sum = 0 
-  <span class="keyword">FOR</span> num <span class="keyword">IN</span> lt_numbers 
-  <span class="keyword">NEXT</span> sum = sum + num ).
-
-out->write( |<span class="string">Summe: { lv_sum }</span>| ).</code></pre>
+          <pre><code id="typing-code-2" class="scroll-typing" data-code="* Einfaches Loop-Beispiel mit moderner Syntax
+            DATA: lt_numbers TYPE TABLE OF i.
+            lt_numbers = VALUE #( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
+            
+            DATA(lv_sum) = REDUCE i( INIT sum = 0 
+              FOR num IN lt_numbers 
+              NEXT sum = sum + num ).
+            
+            out->write( |Summe: { lv_sum }| )."></code></pre>
         </div>
       </div>
 
@@ -1240,7 +1457,57 @@ out->write( lv_text ).</code></pre>
         </div>
       </div>
     </footer>
+    <div id="ai-chat-widget" class="chat-widget">
+      <div class="chat-header" onclick="toggleChat()">
+        <span>🤖 ABAP Co-Pilot</span>
+        <span class="chat-toggle-icon">-</span>
+      </div>
 
+      <div class="chat-main-content">
+        <div class="chat-body">
+          <div class="chat-message bot">
+            Hallo! Ich bin dein ABAP Co-Pilot. Stell mir eine Frage oder sende
+            mir Code zur Analyse.
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-toolbar">
+            <button
+              id="btn-text-mode"
+              class="toolbar-btn active"
+              onclick="switchMode('text')"
+            >
+              Text
+            </button>
+            <button
+              id="btn-code-mode"
+              class="toolbar-btn"
+              onclick="switchMode('code')"
+            >
+              Code
+            </button>
+            <label for="file-upload" class="toolbar-btn file-btn">
+              <span>⬆️ Upload</span>
+              <input type="file" id="file-upload" style="display: none" />
+            </label>
+          </div>
+
+          <div id="text-input-container">
+            <textarea placeholder="Stelle eine Frage..."></textarea>
+          </div>
+          <div id="code-input-container" style="display: none">
+            <div
+              class="chat-code-editor"
+              contenteditable="true"
+              spellcheck="false"
+            ></div>
+          </div>
+
+          <button class="send-btn">Senden</button>
+        </div>
+      </div>
+    </div>
     <script>
       // Theme Toggle
       function toggleTheme() {
@@ -1263,21 +1530,40 @@ out->write( lv_text ).</code></pre>
         });
       }
 
-      // Typing Animation for first code example
-      const codeText = `* Modern ABAP mit CDS Views und ABAP RESTful Programming Model\nCLASS zcl_travel_processor DEFINITION\n  PUBLIC\n  FINAL\n  CREATE PUBLIC.\n\n  PUBLIC SECTION.\n    INTERFACES: if_oo_adt_classrun.\n    \n    TYPES: BEGIN OF ty_travel,\n             travel_id   TYPE /dmo/travel_id,\n             agency_id   TYPE /dmo/agency_id,\n             customer_id TYPE /dmo/customer_id,\n             total_price TYPE /dmo/total_price,\n             status      TYPE /dmo/travel_status,\n           END OF ty_travel.\n           \n    TYPES: tt_travel TYPE TABLE OF ty_travel.\n    \n    METHODS: process_travels\n      RETURNING\n        VALUE(rt_result) TYPE tt_travel.\n        \n  PRIVATE SECTION.\n    METHODS: calculate_discount\n      IMPORTING\n        iv_price TYPE /dmo/total_price\n      RETURNING\n        VALUE(rv_discounted) TYPE /dmo/total_price.\nENDCLASS.\n\nCLASS zcl_travel_processor IMPLEMENTATION.\n  METHOD if_oo_adt_classrun~main.\n    DATA(lt_travels) = process_travels( ).\n    \n    * Inline declaration und moderne String-Templates\n    out->write( |Processed { lines( lt_travels ) } travel records| ).\n    \n    * Verwendung von FOR-Expression\n    DATA(lv_total) = REDUCE /dmo/total_price( \n      INIT sum = 0\n      FOR travel IN lt_travels\n      NEXT sum = sum + travel-total_price ).\n      \n    out->write( |Total revenue: { lv_total CURRENCY = 'EUR' }| ).\n  ENDMETHOD.\n  \n  METHOD process_travels.\n    * CDS View Zugriff mit modernen Features\n    SELECT travel_id,\n           agency_id,\n           customer_id,\n           total_price,\n           overall_status AS status\n           FROM /dmo/i_travel\n           WHERE overall_status = 'A'\n           INTO TABLE @rt_result.\n           \n         * Moderne Iteration mit VALUE-Operator\n         rt_result = VALUE #( FOR travel IN rt_result (\n           travel_id   = travel-travel_id\n           agency_id   = travel-agency_id\n           customer_id = travel-customer_id\n           total_price = calculate_discount( travel-total_price )\n           status      = travel-status ) ).\n       ENDMETHOD.\n       \n       METHOD calculate_discount.\n         rv_discounted = COND #( \n           WHEN iv_price > 10000 THEN iv_price * '0.9'\n           WHEN iv_price > 5000  THEN iv_price * '0.95'\n           ELSE iv_price ).\n       ENDMETHOD.\n     ENDCLASS.`;
-      const typingElement = document.getElementById("typing-code");
-      let i = 0;
-      function typeCode() {
-        if (i < codeText.length) {
-          typingElement.innerHTML += codeText.charAt(i);
-          i++;
-          setTimeout(typeCode, 10); // Geschwindigkeit der Typ-Animation
-        } else {
-          typingElement.classList.remove("code-typing");
-        }
-      }
-      typingElement.classList.add("code-typing");
-      typeCode();
+      // Scroll-gesteuerte Typing Animation
+      const typeAnimationObserver = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const codeElement = entry.target;
+              const codeText = codeElement.getAttribute("data-code").trim();
+              let i = 0;
+
+              codeElement.classList.add("typing"); // Cursor anzeigen
+
+              function type() {
+                if (i < codeText.length) {
+                  // HTML-Entities für < und > beibehalten, damit Syntax Highlighting nicht kaputt geht
+                  const char = codeText.charAt(i);
+                  codeElement.innerHTML += char;
+                  i++;
+                  setTimeout(type, 15); // Tipp-Geschwindigkeit
+                } else {
+                  codeElement.classList.remove("typing"); // Cursor entfernen
+                }
+              }
+              type();
+
+              observer.unobserve(codeElement); // Animation nur einmal auslösen
+            }
+          });
+        },
+        { threshold: 0.5 }
+      ); // Startet, wenn 50% des Elements sichtbar ist
+
+      document.querySelectorAll(".scroll-typing").forEach((el) => {
+        typeAnimationObserver.observe(el);
+      });
 
       // Interactive Code Runner (Simple Simulation)
       function runCode() {
@@ -1304,6 +1590,40 @@ out->write( lv_text ).</code></pre>
         });
       });
       fadeElements.forEach((el) => observer.observe(el));
+
+      // --- AI Chat Widget Logic ---
+
+      const chatWidget = document.getElementById("ai-chat-widget");
+      const textInput = document.getElementById("text-input-container");
+      const codeInput = document.getElementById("code-input-container");
+      const btnText = document.getElementById("btn-text-mode");
+      const btnCode = document.getElementById("btn-code-mode");
+
+      // Funktion zum Öffnen und Schließen des Chats
+      function toggleChat() {
+        chatWidget.classList.toggle("closed");
+        const icon = chatWidget.querySelector(".chat-toggle-icon");
+        icon.textContent = chatWidget.classList.contains("closed") ? "+" : "-";
+      }
+
+      // Funktion zum Umschalten des Eingabemodus
+      function switchMode(mode) {
+        if (mode === "text") {
+          textInput.style.display = "block";
+          codeInput.style.display = "none";
+          btnText.classList.add("active");
+          btnCode.classList.remove("active");
+        } else if (mode === "code") {
+          textInput.style.display = "none";
+          codeInput.style.display = "block";
+          btnText.classList.remove("active");
+          btnCode.classList.add("active");
+        }
+      }
+
+      // Initialzustand: Chat ist geöffnet
+      toggleChat(); // Schließt es beim ersten Laden
+      toggleChat(); // Öffnet es wieder, um den Icon-Status zu setzen
     </script>
   </body>
 </html>
