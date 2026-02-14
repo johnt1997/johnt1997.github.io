@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALiVE — Artificial Legacy in Virtual Environments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --accent: #1DB954;
+      --accent-dim: rgba(29, 185, 84, 0.15);
+      --accent-glow: rgba(29, 185, 84, 0.4);
+      --bg-deep: #0a0a0a;
+      --bg-card: rgba(255, 255, 255, 0.04);
+      --bg-card-hover: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.15);
+      --text: #f2f0f0;
+      --text-dim: rgba(242, 240, 240, 0.55);
+      --text-mid: rgba(242, 240, 240, 0.75);
+      --glass-blur: 20px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Animated Background ── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+      animation: orbFloat 20s ease-in-out infinite;
+    }
+
+    .bg-orb--1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      top: -10%;
+      left: -10%;
+      animation-duration: 25s;
+    }
+
+    .bg-orb--2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+      bottom: -15%;
+      right: -10%;
+      animation-duration: 30s;
+      animation-delay: -5s;
+    }
+
+    .bg-orb--3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #0ea5e9 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-duration: 22s;
+      animation-delay: -10s;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(60px, -40px) scale(1.1); }
+      50% { transform: translate(-30px, 50px) scale(0.95); }
+      75% { transform: translate(40px, 30px) scale(1.05); }
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%);
+    }
+
+    /* ── Layout ── */
+    .content {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Glass Card ── */
+    .glass {
+      background: var(--bg-card);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .glass:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px var(--accent-dim);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 100px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(29, 185, 84, 0.25);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero__badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero__title {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 8px;
+      animation: fadeInUp 0.8s ease-out 0.1s both;
+    }
+
+    .hero__title span {
+      background: linear-gradient(135deg, var(--accent) 0%, #0ea5e9 50%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero__subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 16px auto 40px;
+      font-weight: 300;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .hero__cta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeInUp 0.8s ease-out 0.3s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn--primary {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn--ghost:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeInUp 0.8s ease-out 0.5s both;
+    }
+
+    .scroll-indicator__line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.5); opacity: 0.3; }
+    }
+
+    /* ── Section Titles ── */
+    .section {
+      padding: 100px 0;
+    }
+
+    .section__label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section__title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .section__desc {
+      color: var(--text-dim);
+      max-width: 560px;
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ── Feature Cards ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      border: 1px solid rgba(29, 185, 84, 0.2);
+    }
+
+    .feature-card__title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .feature-card__text {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .feature-card__glow {
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .feature-card:hover .feature-card__glow {
+      opacity: 1;
+    }
+
+    /* ── Tech Stack ── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    .stack-item {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stack-item__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .stack-item__icon--fe { background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.2); }
+    .stack-item__icon--be { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.2); }
+    .stack-item__icon--ai { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.2); }
+    .stack-item__icon--db { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.2); }
+
+    .stack-item__name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .stack-item__role {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* ── Architecture Diagram ── */
+    .architecture {
+      margin-top: 48px;
+      padding: 40px;
+      position: relative;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .arch-node {
+      padding: 16px 24px;
+      border-radius: 12px;
+      text-align: center;
+      min-width: 140px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
+
+    .arch-node__label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .arch-node__name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .arch-arrow {
+      color: var(--accent);
+      font-size: 1.4rem;
+      padding: 0 12px;
+      opacity: 0.6;
+    }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .stat-card {
+      padding: 32px;
+      text-align: center;
+    }
+
+    .stat-card__value {
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #0ea5e9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .stat-card__label {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 8px;
+      font-weight: 400;
+    }
+
+    /* ── Screenshot / Demo ── */
+    .demo-visual {
+      margin-top: 48px;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, #171717 0%, #1a1a2e 100%);
+      border: 1px solid var(--border);
+      padding: 40px;
+    }
+
+    .demo-visual__mockup {
+      display: flex;
+      gap: 12px;
+      height: 320px;
+    }
+
+    .mockup-sidebar {
+      width: 200px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      flex-shrink: 0;
+    }
+
+    .mockup-sidebar__item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      cursor: default;
+    }
+
+    .mockup-sidebar__item--active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(29, 185, 84, 0.2);
+    }
+
+    .mockup-chat {
+      flex: 1;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .mockup-bubble {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      animation: bubbleIn 0.5s ease-out both;
+    }
+
+    .mockup-bubble--user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #000;
+      border-bottom-right-radius: 4px;
+    }
+
+    .mockup-bubble--ai {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-mid);
+      border-bottom-left-radius: 4px;
+    }
+
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mockup-3d {
+      width: 180px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mockup-3d__figure {
+      width: 60px;
+      height: 120px;
+      background: linear-gradient(to top, rgba(29,185,84,0.2), rgba(29,185,84,0.05));
+      border-radius: 30px 30px 20px 20px;
+      position: relative;
+    }
+
+    .mockup-3d__figure::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(29,185,84,0.15);
+      border: 1px solid rgba(29,185,84,0.3);
+    }
+
+    .mockup-3d__label {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 60px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer__text {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .footer__link {
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .footer__link:hover {
+      opacity: 0.7;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .demo-visual__mockup {
+        flex-direction: column;
+        height: auto;
+      }
+      .mockup-sidebar, .mockup-3d {
+        width: 100%;
+        height: 120px;
+      }
+      .mockup-chat {
+        height: 200px;
+      }
+      .arch-flow {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .arch-arrow {
+        transform: rotate(90deg);
+        padding: 4px 0;
+      }
+      .section {
+        padding: 60px 0;
+      }
+    }
+
+    /* ── Typing cursor ── */
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-canvas">
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+  </div>
+  <div class="bg-grid"></div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="content">
+      <div class="hero__badge">Master Thesis Project</div>
+      <h1 class="hero__title"><span>ALiVE</span></h1>
+      <p style="font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-mid); letter-spacing: 0.05em; font-weight: 300; animation: fadeInUp 0.8s ease-out 0.15s both;">
+        Artificial Legacy in Virtual Environments
+      </p>
+      <p class="hero__subtitle">
+        Converse with historical figures through AI-powered dialogue, RAG-based knowledge retrieval, and immersive 3D avatars.
+      </p>
+      <div class="hero__cta-row">
+        <a href="https://github.com/mrcmario" class="btn btn--primary" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+        <a href="#features" class="btn btn--ghost">Explore Features</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-indicator__line"></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section content reveal" id="about">
+    <div class="section__label">About</div>
+    <h2 class="section__title">Dialogues Across Time</h2>
+    <p class="section__desc">
+      ALiVE brings history to life by letting users have natural conversations with AI-impersonated historical figures. Built on a sophisticated RAG pipeline, the system grounds every response in authentic historical documents while maintaining the unique personality and speaking style of each character.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-card glass">
+        <div class="stat-card__value">RAG</div>
+        <div class="stat-card__label">Retrieval Augmented Generation</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-card__value">3D</div>
+        <div class="stat-card__label">Virtual Character Avatars</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-card__value">TTS</div>
+        <div class="stat-card__label">Text-to-Speech Synthesis</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-card__value">2 Lang</div>
+        <div class="stat-card__label">English &amp; German Support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section content reveal" id="features">
+    <div class="section__label">Features</div>
+    <h2 class="section__title">What Makes ALiVE Unique</h2>
+    <p class="section__desc">
+      A full-stack AI system combining document intelligence, conversational AI, and immersive visualization.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card glass">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__icon">&#128218;</div>
+        <div class="feature-card__title">Document-Grounded Knowledge</div>
+        <p class="feature-card__text">Upload PDFs and texts to create rich knowledge bases. Multi-strategy chunking (recursive, sentence-transformer, semantic) ensures optimal retrieval quality.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__icon">&#129504;</div>
+        <div class="feature-card__title">Personality System</div>
+        <p class="feature-card__text">Define character personalities with example Q&A pairs. The LLM adapts its tone, vocabulary, and perspective to authentically represent each historical figure.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__icon">&#127911;</div>
+        <div class="feature-card__title">Voice Synthesis</div>
+        <p class="feature-card__text">Hear history speak with Coqui XTTS v2 text-to-speech. Upload custom voice samples or use built-in voices for multilingual audio responses.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__icon">&#128100;</div>
+        <div class="feature-card__title">3D Virtual Characters</div>
+        <p class="feature-card__text">Animated 3D avatars via ReadyPlayerMe and Three.js. Characters idle, gesture, and respond with lip-sync animations for a truly immersive experience.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__icon">&#128269;</div>
+        <div class="feature-card__title">Hybrid Retrieval</div>
+        <p class="feature-card__text">FAISS vector search combined with BM25 lexical matching for superior document retrieval. Relevance scores provide full transparency on source quality.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__icon">&#128230;</div>
+        <div class="feature-card__title">Export &amp; Share</div>
+        <p class="feature-card__text">Export entire conversations as beautifully formatted PDF or Markdown files. Perfect for educational settings, research documentation, and presentations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Visual -->
+  <section class="section content reveal" id="demo">
+    <div class="section__label">Interface</div>
+    <h2 class="section__title">Immersive Conversation UI</h2>
+    <p class="section__desc">A three-panel layout combining character management, real-time dialogue, and 3D visualization.</p>
+
+    <div class="demo-visual glass">
+      <div class="demo-visual__mockup">
+        <div class="mockup-sidebar">
+          <div class="mockup-sidebar__item mockup-sidebar__item--active">Albert Einstein</div>
+          <div class="mockup-sidebar__item">Nikola Tesla</div>
+          <div class="mockup-sidebar__item">Marie Curie</div>
+          <div class="mockup-sidebar__item" style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px;">+ New Character</div>
+        </div>
+        <div class="mockup-chat">
+          <div class="mockup-bubble mockup-bubble--user" style="animation-delay: 0.2s;">What was your thought process behind special relativity?</div>
+          <div class="mockup-bubble mockup-bubble--ai" style="animation-delay: 0.6s;">Ah, you see, it all began with a simple question I asked myself at sixteen: what would happen if I rode alongside a beam of light? The answer, my friend, changed everything we understood about space and time...<span class="typing-cursor"></span></div>
+          <div class="mockup-bubble mockup-bubble--user" style="animation-delay: 1s;">How did the scientific community react?</div>
+        </div>
+        <div class="mockup-3d">
+          <div class="mockup-3d__figure"></div>
+          <div class="mockup-3d__label">3D Avatar (Three.js)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section class="section content reveal" id="stack">
+    <div class="section__label">Tech Stack</div>
+    <h2 class="section__title">Built With Modern Tools</h2>
+    <p class="section__desc">A carefully chosen stack balancing performance, developer experience, and AI capabilities.</p>
+
+    <div class="stack-grid">
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--fe">&#9883;</div>
+        <div>
+          <div class="stack-item__name">Next.js 14</div>
+          <div class="stack-item__role">Frontend Framework</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--fe">&#9879;</div>
+        <div>
+          <div class="stack-item__name">Three.js / R3F</div>
+          <div class="stack-item__role">3D Rendering</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--be">&#128013;</div>
+        <div>
+          <div class="stack-item__name">Flask</div>
+          <div class="stack-item__role">Backend API</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--ai">&#129302;</div>
+        <div>
+          <div class="stack-item__name">Mistral-7B</div>
+          <div class="stack-item__role">Language Model</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--ai">&#128279;</div>
+        <div>
+          <div class="stack-item__name">LangChain</div>
+          <div class="stack-item__role">RAG Pipeline</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--db">&#128202;</div>
+        <div>
+          <div class="stack-item__name">FAISS</div>
+          <div class="stack-item__role">Vector Store</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--ai">&#127908;</div>
+        <div>
+          <div class="stack-item__name">Coqui XTTS</div>
+          <div class="stack-item__role">Voice Synthesis</div>
+        </div>
+      </div>
+      <div class="stack-item glass">
+        <div class="stack-item__icon stack-item__icon--be">&#128230;</div>
+        <div>
+          <div class="stack-item__name">Docker</div>
+          <div class="stack-item__role">Containerization</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section class="section content reveal">
+    <div class="section__label">Architecture</div>
+    <h2 class="section__title">System Pipeline</h2>
+    <p class="section__desc">From document ingestion to immersive conversation in a modular, containerized architecture.</p>
+
+    <div class="architecture glass">
+      <div class="arch-flow">
+        <div class="arch-node">
+          <div class="arch-node__label">Input</div>
+          <div class="arch-node__name">Documents</div>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-node">
+          <div class="arch-node__label">Process</div>
+          <div class="arch-node__name">Chunking</div>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-node">
+          <div class="arch-node__label">Store</div>
+          <div class="arch-node__name">FAISS Index</div>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-node">
+          <div class="arch-node__label">Retrieve</div>
+          <div class="arch-node__name">Hybrid Search</div>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-node">
+          <div class="arch-node__label">Generate</div>
+          <div class="arch-node__name">Mistral-7B</div>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-node" style="border-color: rgba(29,185,84,0.3); background: var(--accent-dim);">
+          <div class="arch-node__label">Output</div>
+          <div class="arch-node__name" style="color: var(--accent);">ALiVE Chat</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer content">
+    <p class="footer__text">
+      ALiVE &mdash; Developed by <a href="https://github.com/mrcmario" class="footer__link" target="_blank">Mario Comanici</a> as part of a Master Thesis
+    </p>
+  </footer>
+
+  <!-- JS: Scroll Reveal -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Parallax on orbs
+    document.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      document.querySelectorAll('.bg-orb').forEach((orb, i) => {
+        const speed = (i + 1) * 8;
+        orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+    });
+  </script>
+
+</body>
+</html>

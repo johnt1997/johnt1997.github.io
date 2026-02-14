@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram Auto Unliker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  :root {
+    --glass-bg: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.12);
+    --glass-shadow: rgba(0,0,0,0.3);
+    --accent: #E1306C;
+    --accent-light: #F77737;
+    --accent-purple: #833AB4;
+    --text-primary: #f0f0f0;
+    --text-secondary: rgba(255,255,255,0.55);
+  }
+
+  html { scroll-behavior: smooth }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0a0f;
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* === ANIMATED BACKGROUND === */
+  .bg-scene {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  }
+  .bg-scene .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.4;
+    animation: orbFloat 20s ease-in-out infinite;
+  }
+  .bg-scene .orb:nth-child(1) {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #E1306C, transparent 70%);
+    top: -10%; left: -10%;
+    animation-duration: 25s;
+  }
+  .bg-scene .orb:nth-child(2) {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #833AB4, transparent 70%);
+    bottom: -15%; right: -10%;
+    animation-duration: 30s;
+    animation-delay: -5s;
+  }
+  .bg-scene .orb:nth-child(3) {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #F77737, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    animation-duration: 22s;
+    animation-delay: -10s;
+  }
+  .bg-scene .grid-overlay {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-scene .noise {
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1) }
+    25% { transform: translate(40px,-60px) scale(1.1) }
+    50% { transform: translate(-30px,40px) scale(0.95) }
+    75% { transform: translate(50px,20px) scale(1.05) }
+  }
+
+  /* === GLASS CARD === */
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: transform 0.4s cubic-bezier(.22,1,.36,1), box-shadow 0.4s ease, border-color 0.4s ease;
+  }
+  .glass:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  /* === LAYOUT === */
+  .page-content {
+    position: relative; z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* === HERO === */
+  .hero {
+    text-align: center;
+    padding: 80px 40px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(225,48,108,0.08), rgba(131,58,180,0.08));
+    border-radius: 20px;
+  }
+  .hero-icon {
+    width: 88px; height: 88px;
+    margin: 0 auto 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 40px rgba(225,48,108,0.3);
+    animation: iconPulse 3s ease-in-out infinite;
+    position: relative;
+  }
+  .hero-icon svg { width: 44px; height: 44px; fill: white; position: relative; z-index: 1 }
+  @keyframes iconPulse {
+    0%,100% { box-shadow: 0 12px 40px rgba(225,48,108,0.3) }
+    50% { box-shadow: 0 16px 56px rgba(225,48,108,0.5) }
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    max-width: 560px;
+    margin: 0 auto 32px;
+  }
+
+  .badge-row {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(8px);
+  }
+  .badge.js { color: #F7DF1E; border-color: rgba(247,223,30,0.25) }
+  .badge.tm { color: #00b894; border-color: rgba(0,184,148,0.25) }
+  .badge.ig { color: #E1306C; border-color: rgba(225,48,108,0.25) }
+
+  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer; border: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(225,48,108,0.35);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 8px 32px rgba(225,48,108,0.5);
+    transform: translateY(-2px);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+  }
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
+  .btn svg { width: 18px; height: 18px; fill: currentColor }
+
+  /* === STATS === */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .stat-card {
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .stat-card .stat-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* === SECTIONS === */
+  .section { margin-bottom: 48px }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+    padding-left: 4px;
+  }
+  .section-header .icon-circle {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-header .icon-circle svg { width: 18px; height: 18px; fill: white }
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* === FEATURES GRID === */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .feature-card { padding: 28px }
+  .feature-card .feature-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+  }
+  .feature-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* === INSTALL STEPS === */
+  .steps-list { display: flex; flex-direction: column; gap: 14px }
+  .step-card {
+    padding: 24px 28px;
+    display: flex; align-items: flex-start; gap: 18px;
+  }
+  .step-num {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .step-content h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .step-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* === CODE BLOCK === */
+  .code-block-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .code-header span {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .copy-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text-secondary);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff }
+  .copy-btn.copied { color: #00b894; border-color: rgba(0,184,148,0.3) }
+  .code-block {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #c9d1d9;
+  }
+  .code-block .kw { color: #ff7b72 }
+  .code-block .str { color: #a5d6ff }
+  .code-block .num { color: #79c0ff }
+  .code-block .cmt { color: #8b949e; font-style: italic }
+
+  /* === PROFILES TABLE === */
+  .profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .profile-card {
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+  }
+  .profile-card.safe::before { background: linear-gradient(90deg, #00b894, #00cec9) }
+  .profile-card.balanced::before { background: linear-gradient(90deg, #F77737, #FCAF45) }
+  .profile-card.turbo::before { background: linear-gradient(90deg, #E1306C, #ff6b6b) }
+  .profile-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .profile-card.safe .profile-label { color: #00b894 }
+  .profile-card.balanced .profile-label { color: #FCAF45 }
+  .profile-card.turbo .profile-label { color: #E1306C }
+  .profile-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px }
+  .profile-card .profile-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  .profile-vals {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .profile-val {
+    display: flex; justify-content: space-between;
+    font-size: 0.8rem;
+  }
+  .profile-val span:first-child { color: var(--text-secondary) }
+  .profile-val span:last-child { font-weight: 600; font-family: 'JetBrains Mono', monospace }
+
+  /* === FAQ === */
+  .faq-list { display: flex; flex-direction: column; gap: 10px }
+  .faq-item { padding: 0; overflow: hidden; cursor: pointer }
+  .faq-q {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+  }
+  .faq-q:hover { background: rgba(255,255,255,0.03) }
+  .faq-q .chevron {
+    width: 20px; height: 20px;
+    fill: var(--text-secondary);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+  .faq-item.open .faq-q .chevron { transform: rotate(180deg) }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(.22,1,.36,1), padding 0.3s;
+  }
+  .faq-item.open .faq-a { max-height: 200px }
+  .faq-a-inner {
+    padding: 0 24px 20px;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* === FOOTER === */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    margin-top: 20px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .footer a:hover { text-decoration: underline }
+
+  /* === SCROLL REVEAL === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 640px) {
+    .hero { padding: 48px 24px }
+    .page-content { padding: 40px 16px 60px }
+    .features-grid { grid-template-columns: 1fr }
+    .profiles-grid { grid-template-columns: 1fr }
+    .stats-row { grid-template-columns: 1fr 1fr }
+  }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-scene">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="grid-overlay"></div>
+  <div class="noise"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="page-content">
+
+  <!-- HERO -->
+  <div class="hero glass reveal">
+    <div class="hero-icon">
+      <svg viewBox="0 0 24 24"><path d="M16.792 3.904A4.989 4.989 0 0112.02 2c-1.592 0-3.04.745-3.964 1.904C6.784 5.053 5.836 6.42 5.836 8c0 1.58.948 2.947 2.22 4.096.68.614 1.06 1.31 1.06 2.103V15.5a.5.5 0 00.5.5h4.768a.5.5 0 00.5-.5v-1.302c0-.793.38-1.49 1.06-2.103C17.216 10.947 18.164 9.58 18.164 8c0-1.58-.948-2.947-2.22-4.096zM12 21a2 2 0 01-2-2h4a2 2 0 01-2 2zm-1.5-3.5h3v-1h-3v1zM12 0C6.478 0 2 4.284 2 9.564c0 3.67 2.178 6.84 5.328 8.436H12h4.672C19.822 16.404 22 13.234 22 9.564 22 4.284 17.522 0 12 0z" opacity="0"/><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </div>
+    <h1>Instagram Auto Unliker</h1>
+    <p class="subtitle">Automatisiertes Entfernen von Instagram Likes. Sicher, schnell und vollständig im Browser.</p>
+
+    <div class="badge-row">
+      <span class="badge js">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#F7DF1E"><rect width="24" height="24" rx="3"/><path d="M12.87 17.15c0 1.76-.88 2.85-2.85 2.85-1.51 0-2.42-.73-2.87-1.66l1.56-.94c.3.53.57.97 1.22.97.62 0 1.02-.24 1.02-1.19V11h1.92v6.15zm4.55 2.85c-1.75 0-2.88-.83-3.43-1.92l1.56-.9c.4.66.93 1.14 1.85 1.14.78 0 1.28-.39 1.28-.92 0-.64-.51-.87-1.37-1.24l-.47-.2c-1.36-.58-2.27-1.3-2.27-2.84 0-1.41 1.08-2.49 2.76-2.49 1.2 0 2.06.42 2.68 1.5l-1.47.94c-.32-.58-.67-.81-1.21-.81-.55 0-.9.35-.9.81 0 .57.35.8 1.16 1.15l.47.2c1.6.69 2.51 1.39 2.51 2.96 0 1.69-1.33 2.62-3.12 2.62z" fill="#0a0a0f"/></svg>
+        JavaScript
+      </span>
+      <span class="badge tm">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Tampermonkey
+      </span>
+      <span class="badge ig">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Instagram API
+      </span>
+    </div>
+
+    <div class="hero-actions">
+      <a href="https://github.com/johnt1997/instagram-auto-unliker" target="_blank" class="btn btn-primary">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub Repo
+      </a>
+      <a href="https://github.com/johnt1997/instagram-auto-unliker/raw/refs/heads/main/instagram-unlike.user.js" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Script installieren
+      </a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row reveal">
+    <div class="stat-card glass">
+      <div class="stat-value">15</div>
+      <div class="stat-label">Posts pro Batch</div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">Clientseitig</div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Server ben&ouml;tigt</div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-value">ESC</div>
+      <div class="stat-label">Sofort-Stopp</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="icon-circle" style="background:linear-gradient(135deg,#833AB4,#E1306C)">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <h2>Features</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card glass">
+        <div class="feature-icon" style="background:rgba(0,184,148,0.12)">&#x1f6e1;</div>
+        <h3>Safe Mode</h3>
+        <p>Intelligente Delays und randomisierte Wartezeiten zwischen Aktionen verhindern Account-Sperren zuverl&auml;ssig.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon" style="background:rgba(225,48,108,0.12)">&#x26a1;</div>
+        <h3>Batch Processing</h3>
+        <p>Verarbeitet bis zu 25 Posts pro Durchgang mit konfigurierbaren Pausen zwischen den Batches.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon" style="background:rgba(131,58,180,0.12)">&#x1f4ca;</div>
+        <h3>Live-Statistiken</h3>
+        <p>Echtzeit-Fortschritt in der Browser-Console: verarbeitete Batches, entfernte Likes und n&auml;chster Batch-Zeitpunkt.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon" style="background:rgba(247,119,55,0.12)">&#x1f310;</div>
+        <h3>Rein Clientseitig</h3>
+        <p>L&auml;uft komplett in deinem Browser. Keine Server, keine Daten&uuml;bertragung, keine Abh&auml;ngigkeiten.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon" style="background:rgba(252,175,69,0.12)">&#x1f527;</div>
+        <h3>Konfigurierbar</h3>
+        <p>Batch-Gr&ouml;&szlig;e, Klick-Delays und Pause-Zeiten sind frei anpassbar f&uuml;r dein Risikoprofil.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon" style="background:rgba(108,92,231,0.12)">&#x23f9;</div>
+        <h3>Sofort-Stopp</h3>
+        <p>Jederzeit mit der ESC-Taste abbrechen. Seite wird automatisch neu geladen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTALLATION -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="icon-circle" style="background:linear-gradient(135deg,#F77737,#FCAF45)">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      </div>
+      <h2>Installation</h2>
+    </div>
+    <div class="steps-list">
+      <div class="step-card glass">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Tampermonkey installieren</h3>
+          <p>Installiere die Tampermonkey-Erweiterung f&uuml;r Chrome oder Firefox aus dem jeweiligen Extension Store.</p>
+        </div>
+      </div>
+      <div class="step-card glass">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Script installieren</h3>
+          <p>Klicke auf &quot;Script installieren&quot; oben &mdash; Tampermonkey erkennt das Script automatisch. Einfach best&auml;tigen.</p>
+        </div>
+      </div>
+      <div class="step-card glass">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Instagram &ouml;ffnen</h3>
+          <p>Navigiere zu deiner Likes-Aktivit&auml;t auf Instagram. Das Script startet automatisch im Hintergrund.</p>
+        </div>
+      </div>
+      <div class="step-card glass">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Zur&uuml;cklehnen</h3>
+          <p>&Ouml;ffne die Console (F12) um den Fortschritt zu verfolgen. Dr&uuml;cke ESC zum Stoppen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG PROFILES -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="icon-circle" style="background:linear-gradient(135deg,#00b894,#00cec9)">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.611 3.611 0 0112 15.6z"/></svg>
+      </div>
+      <h2>Sicherheits-Profile</h2>
+    </div>
+    <div class="profiles-grid">
+      <div class="profile-card glass safe">
+        <div class="profile-label">Ultra Safe</div>
+        <h3>Kein Risiko</h3>
+        <p class="profile-desc">F&uuml;r maximale Sicherheit. Ideal f&uuml;r den ersten Einsatz.</p>
+        <div class="profile-vals">
+          <div class="profile-val"><span>Batch Size</span><span>10</span></div>
+          <div class="profile-val"><span>Pause</span><span>5 min</span></div>
+          <div class="profile-val"><span>~Likes/h</span><span>~120</span></div>
+        </div>
+      </div>
+      <div class="profile-card glass balanced">
+        <div class="profile-label">Balanced</div>
+        <h3>Standard</h3>
+        <p class="profile-desc">Gutes Verh&auml;ltnis zwischen Geschwindigkeit und Sicherheit.</p>
+        <div class="profile-vals">
+          <div class="profile-val"><span>Batch Size</span><span>15</span></div>
+          <div class="profile-val"><span>Pause</span><span>3 min</span></div>
+          <div class="profile-val"><span>~Likes/h</span><span>~300</span></div>
+        </div>
+      </div>
+      <div class="profile-card glass turbo">
+        <div class="profile-label">Turbo</div>
+        <h3>Schnell</h3>
+        <p class="profile-desc">Maximale Geschwindigkeit. H&ouml;heres Risiko einer temp. Sperre.</p>
+        <div class="profile-vals">
+          <div class="profile-val"><span>Batch Size</span><span>25</span></div>
+          <div class="profile-val"><span>Pause</span><span>2 min</span></div>
+          <div class="profile-val"><span>~Likes/h</span><span>~750</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE EXAMPLE -->
+    <div class="code-block-wrapper glass" style="margin-top:20px">
+      <div class="code-header">
+        <span>Konfiguration anpassen</span>
+        <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+      </div>
+      <pre class="code-block"><span class="kw">const</span> BATCH_SIZE     = <span class="num">15</span>;      <span class="cmt">// Posts pro Durchgang</span>
+<span class="kw">const</span> CLICK_DELAY_MS = <span class="num">150</span>;     <span class="cmt">// ms zwischen Klicks</span>
+<span class="kw">const</span> AFTER_BATCH_MS = <span class="num">180000</span>;  <span class="cmt">// Pause zwischen Batches (3 Min)</span>
+<span class="kw">const</span> INITIAL_WAIT   = <span class="num">8000</span>;   <span class="cmt">// Initiale Wartezeit (8 Sek)</span></pre>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="icon-circle" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)">
+        <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+      </div>
+      <h2>FAQ</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item glass" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>Ist das legal?</span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Technisch verst&ouml;&szlig;t es gegen Instagrams ToS, aber du l&ouml;schst nur deine eigenen Daten. Es besteht kein rechtliches Risiko &mdash; im schlimmsten Fall eine tempor&auml;re Accountsperre (24-48h).</div></div>
+      </div>
+      <div class="faq-item glass" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>Kann ich gebannt werden?</span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Maximal 24-48h tempor&auml;re Sperre. Ein permanenter Ban ist nicht bekannt. Mit dem &quot;Ultra Safe&quot;-Profil minimierst du das Risiko zus&auml;tzlich.</div></div>
+      </div>
+      <div class="faq-item glass" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>Wie lange dauert es, 5000 Likes zu entfernen?</span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Mit den Standard-Einstellungen (Balanced) ca. 8-10 Stunden. Du kannst das Script &uuml;ber Nacht laufen lassen &mdash; der Tab kann im Hintergrund bleiben.</div></div>
+      </div>
+      <div class="faq-item glass" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>Funktioniert es auf dem Handy?</span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Nein, nur auf Desktop-Browsern (Chrome oder Firefox) mit der Tampermonkey-Erweiterung.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer reveal">
+    <p>Open Source &mdash; <a href="https://github.com/johnt1997/instagram-auto-unliker" target="_blank">GitHub</a> &mdash; MIT License</p>
+    <p style="margin-top:8px;opacity:0.5">Made by JT1997</p>
+  </div>
+
+</div>
+
+<script>
+// FAQ Toggle
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+
+// Copy Code
+function copyCode(btn) {
+  const code = btn.closest('.code-block-wrapper').querySelector('.code-block').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Kopiert!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Kopieren'; btn.classList.remove('copied') }, 2000);
+  });
+}
+
+// Scroll Reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
