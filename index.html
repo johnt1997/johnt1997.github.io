@@ -1,1950 +1,560 @@
 <!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ABAP Development Mastery | Professional Training</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      /* AI Chat Widget Styles */
-      /* --- START: Ersetze den alten .chat-widget CSS-Block hiermit --- */
-
-      /* AI Chat Widget Styles - MOBILE OPTIMIZED */
-      .chat-widget {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 60px; /* Breite im geschlossenen Zustand */
-        height: 60px; /* Höhe im geschlossenen Zustand */
-        border-radius: 50%; /* Macht den Button rund */
-        z-index: 1001;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-      }
-
-      /* Stil für den geöffneten Zustand */
-      .chat-widget:not(.closed) {
-        width: 400px;
-        max-width: 90%;
-        height: auto; /* Höhe anpassen an Inhalt */
-        border-radius: 15px; /* Wieder eckig im offenen Zustand */
-      }
-
-      /* --- ENDE: CSS zum Ersetzen --- */
-
-      .chat-header {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        padding: 1rem;
-        color: white;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: 600;
-      }
-
-      .chat-toggle-icon {
-        font-size: 1.5rem;
-        font-weight: bold;
-      }
-
-      .chat-body {
-        padding: 1rem;
-        height: 300px;
-        overflow-y: auto;
-      }
-
-      .chat-message.bot {
-        background: rgba(14, 165, 233, 0.1);
-        padding: 0.75rem;
-        border-radius: 10px;
-        font-size: 0.9rem;
-      }
-
-      .chat-input-area {
-        border-top: 1px solid var(--border-light);
-        padding: 1rem;
-      }
-
-      .chat-toolbar {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
-      }
-
-      .toolbar-btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-light);
-        background: var(--card-light);
-        color: var(--text-light);
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: all 0.2s ease;
-      }
-
-      .toolbar-btn:hover {
-        border-color: var(--primary);
-      }
-
-      .toolbar-btn.active {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-      }
-
-      .file-btn {
-        display: flex;
-        align-items: center;
-      }
-
-      #text-input-container textarea {
-        width: 100%;
-        height: 80px;
-        resize: none;
-        border: 1px solid var(--border-light);
-        border-radius: 10px;
-        padding: 0.5rem;
-        background: var(--bg-light);
-        color: var(--text-light);
-        font-family: inherit;
-      }
-
-      .chat-code-editor {
-        height: 120px;
-        background: var(--code-bg-light);
-        color: #e2e8f0;
-        font-family: "Fira Code", monospace;
-        padding: 1rem;
-        border-radius: 10px;
-        overflow-y: auto;
-        white-space: pre;
-      }
-
-      .send-btn {
-        width: 100%;
-        padding: 0.75rem;
-        margin-top: 0.75rem;
-        border: none;
-        border-radius: 10px;
-        background: var(--secondary);
-        color: white;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-      }
-
-      .send-btn:hover {
-        transform: scale(1.02);
-      }
-      :root {
-        --primary: #0ea5e9;
-        --primary-dark: #0284c7;
-        --secondary: #6366f1;
-        --bg-light: #ffffff;
-        --bg-dark: #0f172a;
-        --text-light: #1e293b;
-        --text-dark: #e2e8f0;
-        --card-light: #f8fafc;
-        --card-dark: #1e293b;
-        --border-light: #e2e8f0;
-        --border-dark: #334155;
-        --code-bg-light: #1e293b;
-        --code-bg-dark: #0f172a;
-      }
-
-      [data-theme="dark"] {
-        --bg-light: #0f172a;
-        --text-light: #e2e8f0;
-        --card-light: #1e293b;
-        --border-light: #334155;
-        --code-bg-light: #0f172a;
-      }
-
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-        background: var(--bg-light);
-        color: var(--text-light);
-        line-height: 1.6;
-        overflow-x: hidden;
-        transition: all 0.3s ease;
-      }
-
-      /* Navigation */
-      nav {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(20px);
-        z-index: 1000;
-        padding: 1rem 2rem;
-        border-bottom: 1px solid var(--border-light);
-        transition: all 0.3s ease;
-      }
-
-      [data-theme="dark"] nav {
-        background: rgba(15, 23, 42, 0.8);
-      }
-
-      .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .logo {
-        font-size: 1.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: glow 3s ease-in-out infinite;
-      }
-
-      @keyframes glow {
-        0%,
-        100% {
-          filter: brightness(1);
-        }
-        50% {
-          filter: brightness(1.2);
-        }
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-      }
-
-      .nav-links a {
-        color: var(--text-light);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        position: relative;
-      }
-
-      .nav-links a::after {
-        content: "";
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--primary);
-        transition: width 0.3s ease;
-      }
-
-      .nav-links a:hover::after {
-        width: 100%;
-      }
-
-      /* Theme Toggle */
-      .theme-toggle {
-        background: var(--card-light);
-        border: 1px solid var(--border-light);
-        border-radius: 50px;
-        padding: 0.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1.2rem;
-      }
-
-      .theme-toggle:hover {
-        transform: rotate(180deg);
-      }
-
-      /* Hero Section */
-      .hero {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: 6rem 2rem 2rem;
-        background: linear-gradient(
-          135deg,
-          rgba(14, 165, 233, 0.1),
-          rgba(99, 102, 241, 0.1)
-        );
-      }
-
-      .hero-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        text-align: center;
-        position: relative;
-        z-index: 2;
-      }
-
-      .hero h1 {
-        font-size: clamp(2.5rem, 8vw, 5rem);
-        font-weight: 900;
-        margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: slideInUp 1s ease;
-      }
-
-      @keyframes slideInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .hero p {
-        font-size: 1.25rem;
-        opacity: 0.8;
-        margin-bottom: 2rem;
-        animation: slideInUp 1s ease 0.2s both;
-      }
-
-      .cta-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-        animation: slideInUp 1s ease 0.4s both;
-      }
-
-      .btn {
-        padding: 1rem 2rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-block;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
-      }
-
-      .btn-secondary {
-        background: var(--card-light);
-        color: var(--text-light);
-        border: 2px solid var(--border-light);
-      }
-
-      .btn-secondary:hover {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-        transform: translateY(-3px);
-      }
-
-      /* Floating Elements - Enhanced with more animation */
-      .floating-elements {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        overflow: hidden;
-        z-index: 1;
-      }
-
-      .floating-circle {
-        position: absolute;
-        border-radius: 50%;
-        background: linear-gradient(
-          135deg,
-          rgba(14, 165, 233, 0.1),
-          rgba(99, 102, 241, 0.1)
-        );
-        animation: float 20s infinite ease-in-out, rotate 30s linear infinite;
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
-      }
-
-      @keyframes rotate {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .floating-circle:nth-child(1) {
-        width: 300px;
-        height: 300px;
-        top: -150px;
-        right: -150px;
-        animation-delay: 0s;
-      }
-
-      .floating-circle:nth-child(2) {
-        width: 200px;
-        height: 200px;
-        bottom: -100px;
-        left: -100px;
-        animation-delay: 5s;
-      }
-
-      .floating-circle:nth-child(3) {
-        width: 150px;
-        height: 150px;
-        top: 50%;
-        right: 10%;
-        animation-delay: 10s;
-      }
-
-      .floating-circle:nth-child(4) {
-        width: 250px;
-        height: 250px;
-        top: 20%;
-        left: 5%;
-        animation-delay: 15s;
-      }
-
-      .floating-circle:nth-child(5) {
-        width: 100px;
-        height: 100px;
-        bottom: 10%;
-        right: 20%;
-        animation-delay: 2s;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translate(0, 0) rotate(0deg);
-        }
-        33% {
-          transform: translate(30px, -30px) rotate(120deg);
-        }
-        66% {
-          transform: translate(-20px, 20px) rotate(240deg);
-        }
-      }
-
-      /* Sections */
-      section {
-        padding: 5rem 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .section-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        text-align: center;
-        margin-bottom: 3rem;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      /* Course Cards */
-      .courses-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 3rem;
-      }
-
-      .course-card {
-        background: var(--card-light);
-        border-radius: 20px;
-        padding: 2rem;
-        border: 1px solid var(--border-light);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        animation: cardPulse 5s ease-in-out infinite alternate;
-      }
-
-      @keyframes cardPulse {
-        0% {
-          box-shadow: 0 5px 15px rgba(14, 165, 233, 0.1);
-        }
-        100% {
-          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
-        }
-      }
-
-      .course-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-      }
-
-      .course-card:hover {
-        transform: translateY(-10px) rotate(2deg);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      }
-
-      .course-card:hover::before {
-        transform: scaleX(1);
-      }
-
-      .course-level {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(14, 165, 233, 0.1);
-        color: var(--primary);
-        border-radius: 50px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-      }
-
-      .course-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-      }
-
-      .course-description {
-        opacity: 0.8;
-        margin-bottom: 1.5rem;
-      }
-
-      .course-topics {
-        list-style: none;
-      }
-
-      .course-topics li {
-        padding: 0.5rem 0;
-        padding-left: 1.5rem;
-        position: relative;
-      }
-
-      .course-topics li::before {
-        content: "→";
-        position: absolute;
-        left: 0;
-        color: var(--primary);
-        font-weight: bold;
-        animation: arrowBounce 1s infinite;
-      }
-
-      @keyframes arrowBounce {
-        0%,
-        100% {
-          transform: translateX(0);
-        }
-        50% {
-          transform: translateX(5px);
-        }
-      }
-
-      /* Bio Section - Made fancier with parallax and particles */
-      .bio-section {
-        position: relative;
-        overflow: hidden;
-      }
-
-      .bio-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          135deg,
-          rgba(14, 165, 233, 0.05),
-          rgba(99, 102, 241, 0.05)
-        );
-        z-index: -1;
-      }
-
-      .particle {
-        position: absolute;
-        width: 5px;
-        height: 5px;
-        background: var(--primary);
-        border-radius: 50%;
-        opacity: 0.3;
-        animation: particleMove 10s linear infinite;
-      }
-
-      @keyframes particleMove {
-        0% {
-          transform: translateY(100vh);
-          opacity: 0.3;
-        }
-        100% {
-          transform: translateY(-100vh);
-          opacity: 0;
-        }
-      }
-
-      .bio-container {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 3rem;
-        align-items: center;
-        background: var(--card-light);
-        border-radius: 20px;
-        padding: 3rem;
-        border: 1px solid var(--border-light);
-        position: relative;
-        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
-      }
-
-      .bio-image {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 4rem;
-        color: white;
-        margin: 0 auto;
-        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.3);
-        animation: pulse 3s ease-in-out infinite,
-          rotateImage 20s linear infinite;
-      }
-
-      @keyframes rotateImage {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-      }
-
-      .bio-content h3 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        animation: textGlow 2s ease-in-out infinite;
-      }
-
-      @keyframes textGlow {
-        0%,
-        100% {
-          text-shadow: 0 0 5px var(--primary);
-        }
-        50% {
-          text-shadow: 0 0 15px var(--secondary);
-        }
-      }
-
-      .bio-stats {
-        display: flex;
-        gap: 2rem;
-        margin-top: 2rem;
-      }
-
-      .stat {
-        text-align: center;
-        transition: transform 0.3s ease;
-      }
-
-      .stat:hover {
-        transform: scale(1.1) rotate(5deg);
-      }
-
-      .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--primary);
-      }
-
-      .stat-label {
-        font-size: 0.875rem;
-        opacity: 0.7;
-      }
-
-      /* Code Editor - Enhanced with typing animation */
-      .code-editor {
-        background: var(--code-bg-light);
-        border-radius: 15px;
-        overflow: hidden;
-        margin-top: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      }
-
-      .editor-header {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .editor-title {
-        color: white;
-        font-weight: 600;
-      }
-
-      .editor-buttons {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .editor-btn {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-      }
-
-      .editor-btn:hover {
-        transform: scale(1.2);
-      }
-
-      .editor-btn.close {
-        background: #ff5f57;
-      }
-      .editor-btn.minimize {
-        background: #ffbd2e;
-      }
-      .editor-btn.maximize {
-        background: #28ca42;
-      }
-
-      .code-container {
-        padding: 2rem;
-        position: relative;
-      }
-
-      pre {
-        color: #e2e8f0;
-        font-family: "Fira Code", "Courier New", monospace;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        overflow-x: auto;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-
-      @keyframes blinkCursor {
-        from,
-        to {
-          border-color: transparent;
-        }
-        50% {
-          border-color: #fff;
-        }
-      }
-      /* ÄNDERE .code-typing ZU .scroll-typing.typing */
-      .scroll-typing.typing {
-        display: inline-block;
-        border-right: 2px solid #fff;
-        animation: blinkCursor 0.75s step-end infinite;
-      }
-      .copy-btn {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .copy-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-
-      .copy-btn.copied {
-        background: #28ca42;
-        border-color: #28ca42;
-      }
-
-      /* Syntax Highlighting */
-      .keyword {
-        color: #ff79c6;
-      }
-      .string {
-        color: #f1fa8c;
-      }
-      .comment {
-        color: #6272a4;
-        font-style: italic;
-      }
-      .type {
-        color: #8be9fd;
-      }
-      .variable {
-        color: #50fa7b;
-      }
-
-      /* Interactive Code Box - New Feature */
-      .interactive-code {
-        margin-top: 2rem;
-        background: var(--card-light);
-        border-radius: 15px;
-        padding: 1.5rem;
-        border: 1px solid var(--border-light);
-      }
-
-      .interactive-code textarea {
-        width: 100%;
-        height: 200px;
-        background: var(--code-bg-light);
-        color: #e2e8f0;
-        font-family: "Fira Code", monospace;
-        padding: 1rem;
-        border: none;
-        border-radius: 10px;
-        resize: vertical;
-      }
-
-      .run-btn {
-        margin-top: 1rem;
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        border: none;
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s ease;
-      }
-
-      .run-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
-      }
-
-      .output {
-        margin-top: 1rem;
-        padding: 1rem;
-        background: var(--code-bg-light);
-        color: #e2e8f0;
-        border-radius: 10px;
-      }
-
-      /* Video Grid */
-      .video-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-      }
-      /* 3D Cube Styles */
-      .cube-container {
-        position: absolute;
-        width: 300px;
-        height: 300px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        perspective: 1000px; /* Wichtig für die 3D-Tiefe */
-        z-index: 1;
-      }
-
-      .cube:hover {
-        animation-play-state: paused;
-      }
-
-      .chat-widget {
-        bottom: 30px; /* statt 20px */
-      }
-
-      .cube {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        transform-style: preserve-3d;
-        animation: rotate-cube 20s infinite linear;
-      }
-
-      @keyframes rotate-cube {
-        from {
-          transform: rotateX(0deg) rotateY(0deg);
-        }
-        to {
-          transform: rotateX(360deg) rotateY(360deg);
-        }
-      }
-
-      .cube .face {
-        position: absolute;
-        width: 300px;
-        height: 300px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: white;
-        background: rgba(14, 165, 233, 0.2);
-        border: 2px solid var(--primary);
-        backdrop-filter: blur(5px);
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-      }
-
-      /* Positionierung der einzelnen Würfelseiten im 3D-Raum */
-      .face.front {
-        transform: rotateY(0deg) translateZ(150px);
-      }
-      .face.back {
-        transform: rotateY(180deg) translateZ(150px);
-      }
-      .face.right {
-        transform: rotateY(90deg) translateZ(150px);
-      }
-      .face.left {
-        transform: rotateY(-90deg) translateZ(150px);
-      }
-      .face.top {
-        transform: rotateX(90deg) translateZ(150px);
-      }
-      .face.bottom {
-        transform: rotateX(-90deg) translateZ(150px);
-      }
-      .video-card {
-        background: var(--card-light);
-        border-radius: 15px;
-        overflow: hidden;
-        border: 1px solid var(--border-light);
-        transition: all 0.3s ease;
-        cursor: pointer;
-      }
-
-      .video-card:hover {
-        transform: translateY(-5px) rotate(3deg);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-      }
-
-      .video-thumbnail {
-        width: 100%;
-        height: 200px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .play-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-      }
-
-      .video-card:hover .play-icon {
-        transform: scale(1.1) rotate(360deg);
-        background: white;
-      }
-
-      .play-icon::after {
-        content: "▶";
-        color: var(--primary);
-        font-size: 1.5rem;
-        margin-left: 5px;
-      }
-
-      .video-info {
-        padding: 1.5rem;
-      }
-
-      .video-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-
-      .video-duration {
-        color: var(--primary);
-        font-size: 0.875rem;
-      }
-
-      /* Blog */
-      .blog-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-      }
-
-      .blog-card {
-        background: var(--card-light);
-        border-radius: 15px;
-        overflow: hidden;
-        border: 1px solid var(--border-light);
-        transition: all 0.3s ease;
-      }
-
-      .blog-card:hover {
-        transform: translateY(-5px) rotate(1deg);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-      }
-
-      .blog-header {
-        height: 200px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        padding: 2rem;
-        display: flex;
-        align-items: flex-end;
-      }
-
-      .blog-category {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-        font-size: 0.875rem;
-        backdrop-filter: blur(10px);
-      }
-
-      .blog-content {
-        padding: 1.5rem;
-      }
-
-      .blog-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-
-      .blog-excerpt {
-        opacity: 0.8;
-        margin-bottom: 1rem;
-        line-height: 1.6;
-      }
-
-      .blog-meta {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.875rem;
-        opacity: 0.6;
-      }
-
-      .blog-code-snippet {
-        background: var(--code-bg-light);
-        padding: 1rem;
-        border-radius: 10px;
-        margin-top: 1rem;
-      }
-
-      .blog-code-snippet pre {
-        margin: 0;
-      }
-
-      /* Footer */
-      footer {
-        background: var(--card-light);
-        border-top: 1px solid var(--border-light);
-        padding: 3rem 2rem;
-        text-align: center;
-        margin-top: 5rem;
-      }
-
-      .footer-content {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .social-links {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 2rem;
-      }
-
-      .social-link {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s ease;
-      }
-
-      .social-link:hover {
-        transform: translateY(-5px) rotate(360deg);
-        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .bio-content p {
-          /* Setzt eine maximale Breite, damit der Text auf Tablets nicht zu lang wird */
-          max-width: 550px;
-
-          /* Diese zwei Zeilen zentrieren den Paragraphen-Block selbst */
-          margin-left: auto !important;
-          margin-right: auto !important;
-
-          /* Diese Zeile zentriert den Text innerhalb des Blocks */
-          text-align: center !important;
-          overflow-x: hidden; /* Verhindert horizontales Überlaufen */
-          padding-left: 1rem; /* Fügt links etwas Innenabstand hinzu */
-          padding-right: 1rem; /* Fügt rechts etwas Innenabstand hinzu */
-        }
-
-        /* Innerhalb des @media (max-width: 768px) Blocks */
-        .bio-content p {
-          word-break: break-word;
-          hyphens: auto;
-          padding: 0 1rem;
-          font-size: 0.95rem; /* Etwas kleinere Schrift auf Mobile */
-        }
-        /* In den @media Block einfügen */
-        .bio-container {
-          margin-top: 3rem; /* Fügt Abstand nach oben hinzu */
-        }
-
-        /* In den @media Block einfügen */
-        .cube-container {
-          width: 200px; /* Kleinerer Container */
-          height: 200px;
-        }
-
-        .cube .face {
-          width: 200px; /* Kleinere Seiten */
-          height: 200px;
-          font-size: 1.5rem; /* Kleinere Schrift */
-        }
-
-        /* Wichtig: Auch die 3D-Positionierung anpassen! */
-        .face.front {
-          transform: rotateY(0deg) translateZ(100px);
-        }
-        .face.back {
-          transform: rotateY(180deg) translateZ(100px);
-        }
-        .face.right {
-          transform: rotateY(90deg) translateZ(100px);
-        }
-        .face.left {
-          transform: rotateY(-90deg) translateZ(100px);
-        }
-        .face.top {
-          transform: rotateX(90deg) translateZ(100px);
-        }
-        .face.bottom {
-          transform: rotateX(-90deg) translateZ(100px);
-        }
-
-        .bio-container {
-          grid-template-columns: 1fr;
-          text-align: center;
-        }
-
-        .bio-stats {
-          justify-content: center;
-        }
-
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-
-        /* --- In den @media Block einfügen --- */
-
-        /* Im @media (max-width: 768px) Block */
-        .chat-widget.closed {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-        }
-
-        .chat-widget.closed .chat-header {
-          border-radius: 50%;
-          padding: 0;
-          width: 60px;
-          height: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .chat-widget.closed .header-title {
-          display: none;
-        }
-
-        .chat-widget.closed .chat-toggle-icon {
-          content: "🤖";
-          font-size: 1.5rem;
-        }
-
-        /* Im @media (max-width: 768px) Block */
-        .hero {
-          min-height: auto;
-          padding-top: 8rem; /* Mehr Platz oben */
-        }
-
-        .hero-content {
-          margin-top: 250px; /* Platz für den Würfel */
-        }
-
-        /* Im @media (max-width: 768px) Block */
-        .code-container pre {
-          font-size: 0.75rem; /* Kleinere Schrift für bessere Lesbarkeit */
-          overflow-x: auto;
-          max-width: 100%;
-        }
-
-        /* Chat-Fenster im geöffneten Zustand bildschirmfüllend machen */
-        .chat-widget:not(.closed) {
-          width: 100%;
-          height: 100%;
-          bottom: 0;
-          right: 0;
-          border-radius: 0; /* Keine abgerundeten Ecken im Vollbild */
-          background: var(--card-light);
-        }
-
-        /* Den inneren Aufbau anpassen */
-        .chat-widget:not(.closed) .chat-main-content {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .chat-widget:not(.closed) .chat-body {
-          flex-grow: 1; /* Sorgt dafür, dass der Chat-Verlauf den verfügbaren Platz füllt */
-          height: auto;
-        }
-
-        /* --- Ende des Blocks für die Media-Query --- */
-      }
-
-      /* Mobile Phones - NEUE MEDIA QUERY */
-      @media (max-width: 430px) {
-        /* Navigation mit Burger Menu */
-        .nav-container {
-          position: relative;
-        }
-
-        .burger-menu {
-          display: block !important;
-          width: 30px;
-          height: 25px;
-          position: relative;
-          cursor: pointer;
-          z-index: 1002;
-        }
-
-        .burger-menu span {
-          display: block;
-          width: 100%;
-          height: 3px;
-          background: var(--text-light);
-          margin-bottom: 5px;
-          transition: all 0.3s ease;
-          border-radius: 2px;
-        }
-
-        .burger-menu.active span:nth-child(1) {
-          transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .burger-menu.active span:nth-child(2) {
-          opacity: 0;
-        }
-
-        .burger-menu.active span:nth-child(3) {
-          transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        .nav-links {
-          position: fixed;
-          top: 0;
-          right: -100%;
-          width: 80%;
-          height: 100vh;
-          background: var(--bg-light);
-          flex-direction: column;
-          padding: 5rem 2rem;
-          transition: right 0.3s ease;
-          box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
-          display: flex !important;
-        }
-
-        .nav-links.active {
-          right: 0;
-        }
-
-        /* Hero Anpassungen */
-        .hero {
-          min-height: 100vh;
-          padding-top: 4rem;
-        }
-
-        .cube-container {
-          width: 150px;
-          height: 150px;
-          top: 25%; /* Weiter oben positioniert */
-        }
-
-        .cube .face {
-          width: 150px;
-          height: 150px;
-          font-size: 1.2rem;
-        }
-
-        /* Würfel-Positionen anpassen */
-        .face.front {
-          transform: rotateY(0deg) translateZ(75px);
-        }
-        .face.back {
-          transform: rotateY(180deg) translateZ(75px);
-        }
-        .face.right {
-          transform: rotateY(90deg) translateZ(75px);
-        }
-        .face.left {
-          transform: rotateY(-90deg) translateZ(75px);
-        }
-        .face.top {
-          transform: rotateX(90deg) translateZ(75px);
-        }
-        .face.bottom {
-          transform: rotateX(-90deg) translateZ(75px);
-        }
-
-        .hero-content {
-          margin-top: 320px; /* Mehr Abstand zum Würfel */
-        }
-
-        .hero h1 {
-          font-size: 2rem;
-        }
-
-        .hero p {
-          font-size: 1rem;
-          padding: 0 1rem;
-        }
-
-        /* Chat Widget Fixes */
-        .chat-widget {
-          bottom: 20px;
-          right: 20px;
-        }
-
-        .chat-widget.closed {
-          width: 50px;
-          height: 50px;
-        }
-
-        .chat-widget.closed .chat-header {
-          width: 50px;
-          height: 50px;
-          padding: 0;
-          justify-content: center;
-        }
-
-        /* Bio Text Fix */
-        .bio-content p {
-          font-size: 0.9rem;
-          line-height: 1.5;
-          padding: 0 0.5rem;
-        }
-
-        /* Stats anpassen */
-        .bio-stats {
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .stat {
-          flex: 0 0 45%;
-        }
-      }
-
-      /* Burger Menu standardmäßig versteckt auf Desktop */
-      .burger-menu {
-        display: none;
-      }
-
-      /* Scroll animations */
-      .fade-in {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.8s ease;
-      }
-
-      .fade-in.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav>
-      <div class="nav-container">
-        <div class="logo">ABAP.dev</div>
-        <div class="nav-links">
-          <a href="#kurse">Kurse</a>
-          <a href="#about">Über mich</a>
-          <a href="#code">Code</a>
-          <a href="#videos">Videos</a>
-          <a href="#blog">Blog</a>
-          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-        </div>
-        <!-- In der nav-container, nach nav-links -->
-        <div class="burger-menu" onclick="toggleMenu()">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Tusha — Papers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+.dropdown {
+  position: relative;
+}
+.dropdown-menu {
+  position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  list-style: none; padding: 0.5rem 0;
+  background: rgba(16,16,31,0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  min-width: 180px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateX(-50%) translateY(16px);
+}
+.dropdown:hover .dropdown-menu {
+  opacity: 1; pointer-events: auto;
+  transform: translateX(-50%) translateY(8px);
+}
+.dropdown-menu a {
+  display: block; padding: 0.5rem 1.2rem;
+  font-size: 0.82rem; text-transform: none;
+  letter-spacing: 0.02em;
+}
+.dropdown-menu a:hover {
+  background: rgba(126,184,247,0.08);
+}
+  :root {
+    --bg-deep: #0a0a12;
+    --bg-mid: #10101f;
+    --glass-bg: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --glass-highlight: rgba(255,255,255,0.12);
+    --accent: #7eb8f7;
+    --accent-warm: #c4a1f7;
+    --accent-glow: rgba(126,184,247,0.25);
+    --text-primary: #e8eaf0;
+    --text-secondary: rgba(232,234,240,0.55);
+    --text-muted: rgba(232,234,240,0.3);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Ambient background ── */
+  .ambient {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    overflow: hidden;
+  }
+  .ambient .orb {
+    position: absolute; border-radius: 50%; filter: blur(120px);
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+  .ambient .orb:nth-child(1) {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(126,184,247,0.12), transparent 70%);
+    top: -10%; left: -5%;
+  }
+  .ambient .orb:nth-child(2) {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(196,161,247,0.10), transparent 70%);
+    bottom: -15%; right: -10%;
+    animation-delay: -7s; animation-duration: 25s;
+  }
+  .ambient .orb:nth-child(3) {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(126,184,247,0.07), transparent 70%);
+    top: 50%; left: 60%;
+    animation-delay: -12s; animation-duration: 30s;
+  }
+  @keyframes drift {
+    0%   { transform: translate(0,0) scale(1); }
+    33%  { transform: translate(40px,-30px) scale(1.05); }
+    66%  { transform: translate(-20px,50px) scale(0.95); }
+    100% { transform: translate(30px,20px) scale(1.02); }
+  }
+
+  /* ── Grain overlay ── */
+  .grain {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px;
+  }
+
+  /* ── Navigation ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    background: rgba(10,10,18,0.6);
+    border-bottom: 1px solid var(--glass-border);
+    transition: background 0.4s;
+  }
+  nav .logo {
+    font-family: var(--font-display);
+    font-size: 1.3rem; font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  nav .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  nav .nav-links a {
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; transition: color 0.3s;
+    position: relative;
+  }
+  nav .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1.5px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+    transition: width 0.3s ease;
+  }
+  nav .nav-links a:hover { color: var(--text-primary); }
+  nav .nav-links a:hover::after { width: 100%; }
+  nav .nav-links a.active { color: var(--accent); }
+  nav .nav-links a.active::after { width: 100%; }
+
+  /* ── Main layout ── */
+  main {
+    position: relative; z-index: 2;
+    max-width: 1100px; margin: 0 auto;
+    padding: 8rem 2rem 5rem;
+  }
+
+  /* ── Hero section ── */
+  .hero {
+    text-align: center; margin-bottom: 5rem;
+    opacity: 0; transform: translateY(30px);
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+  .hero .eyebrow {
+    font-family: var(--font-mono); font-size: 0.75rem; font-weight: 300;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.2rem;
+    display: inline-flex; align-items: center; gap: 0.75rem;
+  }
+  .hero .eyebrow::before, .hero .eyebrow::after {
+    content: ''; width: 30px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent));
+  }
+  .hero .eyebrow::after {
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .hero h1 {
+    font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700; line-height: 1.15; letter-spacing: -0.02em;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.05rem; color: var(--text-secondary);
+    max-width: 600px; margin: 0 auto; line-height: 1.7;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Paper card ── */
+  .paper-card {
+    position: relative;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 2.8rem 3rem;
+    margin-bottom: 2.5rem;
+    backdrop-filter: blur(30px) saturate(1.3);
+    -webkit-backdrop-filter: blur(30px) saturate(1.3);
+    transition: transform 0.45s cubic-bezier(0.23,1,0.32,1),
+                border-color 0.4s, box-shadow 0.4s;
+    overflow: hidden;
+    opacity: 0; transform: translateY(40px);
+    animation: fadeUp 0.7s ease forwards;
+  }
+  .paper-card:nth-child(1) { animation-delay: 0.35s; }
+  .paper-card:nth-child(2) { animation-delay: 0.5s; }
+
+  .paper-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+  }
+
+  /* Hover shimmer */
+  .paper-card .shimmer {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(800px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(126,184,247,0.06), transparent 40%);
+    opacity: 0; transition: opacity 0.5s;
+    pointer-events: none;
+  }
+  .paper-card:hover .shimmer { opacity: 1; }
+  .paper-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(126,184,247,0.15);
+    box-shadow: 0 20px 60px -15px rgba(0,0,0,0.4),
+                0 0 40px -10px var(--accent-glow);
+  }
+
+  .paper-card .card-content { position: relative; z-index: 1; }
+
+  /* Status badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--font-mono); font-size: 0.68rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.35rem 0.9rem;
+    border-radius: 100px;
+    margin-bottom: 1.4rem;
+  }
+  .badge.published {
+    background: rgba(126,184,247,0.1);
+    border: 1px solid rgba(126,184,247,0.2);
+    color: var(--accent);
+  }
+  .badge.published::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .paper-card h2 {
+    font-family: var(--font-display); font-size: 1.55rem;
+    font-weight: 700; line-height: 1.35;
+    letter-spacing: -0.01em; margin-bottom: 1rem;
+  }
+
+  .paper-meta {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    margin-bottom: 1.4rem;
+  }
+  .paper-meta span {
+    font-size: 0.82rem; color: var(--text-secondary);
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .paper-meta .icon {
+    width: 14px; height: 14px; opacity: 0.5;
+  }
+
+  .paper-abstract {
+    font-size: 0.92rem; line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 1.8rem;
+    display: -webkit-box; -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical; overflow: hidden;
+    transition: all 0.4s ease;
+  }
+  .paper-abstract.expanded {
+    -webkit-line-clamp: unset;
+  }
+
+  .expand-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--accent); letter-spacing: 0.05em;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    transition: gap 0.3s;
+    margin-bottom: 1.8rem;
+  }
+  .expand-btn:hover { gap: 0.7rem; }
+  .expand-btn svg {
+    width: 14px; height: 14px;
+    transition: transform 0.3s;
+  }
+  .expand-btn.expanded svg { transform: rotate(180deg); }
+
+  /* Tags */
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.8rem; }
+  .tag {
+    font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: var(--text-secondary);
+    transition: border-color 0.3s, color 0.3s, background 0.3s;
+  }
+  .tag:hover {
+    border-color: rgba(126,184,247,0.3);
+    color: var(--accent);
+    background: rgba(126,184,247,0.05);
+  }
+
+  /* Authors */
+  .authors {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    font-size: 0.82rem; color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  .authors .author-you {
+    color: var(--accent); font-weight: 500;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex; gap: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+  }
+  .stat {
+    display: flex; flex-direction: column; gap: 0.2rem;
+  }
+  .stat .label {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .stat .value {
+    font-size: 0.9rem; font-weight: 500; color: var(--text-primary);
+  }
+
+  /* ── Divider ── */
+  .section-divider {
+    text-align: center; margin: 4rem 0 3rem;
+    opacity: 0; animation: fadeUp 0.6s ease forwards 0.6s;
+  }
+  .section-divider span {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted);
+    display: inline-flex; align-items: center; gap: 1rem;
+  }
+  .section-divider span::before, .section-divider span::after {
+    content: ''; width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border));
+  }
+  .section-divider span::after {
+    background: linear-gradient(90deg, var(--glass-border), transparent);
+  }
+
+  /* ── Footer ── */
+  footer {
+    position: relative; z-index: 2;
+    text-align: center; padding: 3rem 2rem 2rem;
+    border-top: 1px solid var(--glass-border);
+    max-width: 1100px; margin: 3rem auto 0;
+  }
+  footer p {
+    font-size: 0.78rem; color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+  footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  footer a:hover { color: var(--accent); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    nav .nav-links { gap: 1.5rem; }
+    nav .nav-links a { font-size: 0.75rem; }
+    main { padding: 7rem 1.2rem 3rem; }
+    .paper-card { padding: 2rem 1.5rem; border-radius: 18px; }
+    .paper-card h2 { font-size: 1.3rem; }
+    .stats-row { gap: 1.2rem; flex-wrap: wrap; }
+  }
+  @media (max-width: 480px) {
+    nav .nav-links { gap: 1rem; }
+    .hero h1 { font-size: 2rem; }
+    .paper-meta { flex-direction: column; gap: 0.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambient BG -->
+<div class="ambient">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+<div class="grain"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="logo">John Tusha</div>
+  <ul class="nav-links">
+    <li><a href="#">About</a></li>
+    <li><a href="#" class="active">Papers</a></li>
+    <li class="dropdown">
+  <a href="#">Projects</a>
+  <ul class="dropdown-menu">
+    <li><a href="project1.html">Guinness Rater</a></li>
+    <li><a href="project2.html">Flight Scraper</a></li>
+    <li><a href="project3.html">ALiVE Chatbot</a></li>
+  </ul>
+</li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Main -->
+<main>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="eyebrow">Research & Publications</div>
+    <h1>Academic <em>Papers</em></h1>
+    <p>Exploring the intersection of artificial intelligence, education technology, and human-centered computing.</p>
+  </section>
+
+  <!-- Paper 1 -->
+  <article class="paper-card" onmousemove="updateShimmer(event, this)" onmouseleave="resetShimmer(this)">
+    <div class="shimmer"></div>
+    <div class="card-content">
+      <div class="badge published">Published</div>
+
+      <h2>Comparison of Traditional Learning Methods versus Chatbots in History Lessons in Austria</h2>
+
+      <div class="authors">
+        <span>Karl Pinter,</span>
+        <span class="author-you">John Tusha,</span>
+        <span>Paul Spiesberger,</span>
+        <span>Dominik Hoelbling,</span>
+        <span>Thomas Grechenig</span>
       </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="cube-container">
-        <div class="cube">
-          <div class="face front">SELECT</div>
-          <div class="face back">CLASS</div>
-          <div class="face right">LOOP</div>
-          <div class="face left">DATA</div>
-          <div class="face top">CDS</div>
-          <div class="face bottom">TYPE</div>
-        </div>
+      <div class="paper-meta">
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          2024
+        </span>
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Lecture Notes in Computer Science · Springer
+        </span>
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Vienna, Austria
+        </span>
       </div>
-      <div class="hero-content">
-        <h1>ABAP Development Mastery</h1>
-        <p>
-          Von den Grundlagen bis zur Expertise – Ihr Weg zum ABAP-Profi.
-          Entdecken Sie interaktive Code-Trainer, animierte Lernmodule und
-          praxisnahe Beispiele!
-        </p>
-        <div class="cta-buttons">
-          <a href="#kurse" class="btn btn-primary">Kurse entdecken</a>
-          <a href="#contact" class="btn btn-secondary">Kontakt aufnehmen</a>
-        </div>
-      </div>
-    </section>
 
-    <!-- Courses Section -->
-    <section id="kurse" class="fade-in">
-      <h2 class="section-title">Kurs-Programme</h2>
-      <div class="courses-grid">
-        <div class="course-card">
-          <span class="course-level">Einsteiger</span>
-          <h3 class="course-title">ABAP Fundamentals</h3>
-          <p class="course-description">
-            Der perfekte Einstieg in die ABAP-Entwicklung mit SAP, inklusive
-            interaktiver Übungen und animierter Erklärungen.
-          </p>
-          <ul class="course-topics">
-            <li>ABAP Syntax & Datentypen</li>
-            <li>Interne Tabellen & Strukturen</li>
-            <li>Modularisierung</li>
-            <li>Debugging Techniken</li>
-          </ul>
-        </div>
-        <div class="course-card">
-          <span class="course-level">Fortgeschritten</span>
-          <h3 class="course-title">ABAP Objects & Design Patterns</h3>
-          <p class="course-description">
-            Objektorientierte Programmmierung und moderne Patterns mit
-            Live-Code-Editing und Simulations.
-          </p>
-          <ul class="course-topics">
-            <li>Klassen & Interfaces</li>
-            <li>MVC Pattern in ABAP</li>
-            <li>Exception Handling</li>
-            <li>Unit Testing</li>
-          </ul>
-        </div>
-        <div class="course-card">
-          <span class="course-level">Experte</span>
-          <h3 class="course-title">S/4HANA & CDS Views</h3>
-          <p class="course-description">
-            Moderne ABAP-Entwicklung für S/4HANA mit fortgeschrittenen
-            Animationen und interaktiven Diagrammen.
-          </p>
-          <ul class="course-topics">
-            <li>Core Data Services</li>
-            <li>ABAP RESTful Programming</li>
-            <li>Fiori Elements Integration</li>
-            <li>Performance Optimierung</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- Bio Section - Fancy Upgrade -->
-    <section id="about" class="bio-section fade-in">
-      <div class="bio-background"></div>
-      <div class="particle" style="left: 10%; animation-delay: 0s"></div>
-      <div class="particle" style="left: 30%; animation-delay: 2s"></div>
-      <div class="particle" style="left: 50%; animation-delay: 4s"></div>
-      <div class="particle" style="left: 70%; animation-delay: 6s"></div>
-      <div class="particle" style="left: 90%; animation-delay: 8s"></div>
-      <h2 class="section-title">Über Ihren Trainer</h2>
-      <div class="bio-container">
-        <div class="bio-image">👨‍💻</div>
-        <div class="bio-content">
-          <h3>Max Mustermann</h3>
-          <p>
-            Mit über 15 Jahren Erfahrung in der SAP-Entwicklung bringe ich
-            komplexe ABAP-Konzepte verständlich und praxisnah bei. Als
-            zertifizierter SAP-Berater habe ich in zahlreichen
-            S/4HANA-Transformationsprojekten gearbeitet und kenne die
-            Herausforderungen der modernen ABAP-Entwicklung aus erster Hand.
-            Meine Leidenschaft: Interaktive Lernwerkzeuge, die das Coden zum
-            Spaß machen!
-          </p>
-          <div class="bio-stats">
-            <div class="stat">
-              <div class="stat-number">500+</div>
-              <div class="stat-label">Teilnehmer geschult</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">15+</div>
-              <div class="stat-label">Jahre Erfahrung</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">50+</div>
-              <div class="stat-label">SAP-Projekte</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">100%</div>
-              <div class="stat-label">Zufriedenheit</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Code Example Section - Added multiple examples and interactive box -->
-    <section id="code" class="fade-in">
-      <h2 class="section-title">Code Beispiele</h2>
-      <p>
-        Hier finden Sie praxisnahe ABAP-Code-Beispiele. Probieren Sie den
-        interaktiven Editor aus – schreiben Sie Code und simulieren Sie die
-        Ausführung!
+      <p class="paper-abstract" id="abstract-1">
+        The education system is a fundamental component of any state and is currently confronted with the challenge of incorporating emerging technologies such as Artificial Intelligence (AI) and expanding its technical capabilities. Chatbots appear to have the potential to enhance traditional learning methods and provide increased individual support. This study investigated the potential usage of chatbots for history lessons in an Austrian high school. A class at a secondary school was divided into two groups, all of which were given the same assignments. One group was only permitted to utilise traditional reference books, while the other group was permitted to utilise OpenAI's ChatGPT as an aid. No statistically significant differences were observed between the two groups in terms of test results (t-value = 0.434 for open questions, t-value = 0.159 for multiple choice questions, p > 0.05). However, there were discernible differences through the teacher's observations — assignments were completed more expeditiously and there was a greater tendency to pose follow-up questions with the assistance of AI.
       </p>
 
-      <!-- Existing Code Editor with Typing Animation -->
-      <div class="code-editor">
-        <div class="editor-header">
-          <span class="editor-title">modern_abap_example.abap</span>
-          <div class="editor-buttons">
-            <button class="editor-btn close"></button>
-            <button class="editor-btn minimize"></button>
-            <button class="editor-btn maximize"></button>
-          </div>
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
-          <pre><code id="typing-code"></code></pre>
+      <button class="expand-btn" onclick="toggleAbstract('abstract-1', this)">
+        Read more
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
 
-          <pre><code id="typing-code" class="scroll-typing" data-code="* Modern ABAP mit CDS Views und ABAP RESTful Programming Model
-          CLASS zcl_travel_processor DEFINITION PUBLIC FINAL CREATE PUBLIC.
-            PUBLIC SECTION.
-              INTERFACES if_oo_adt_classrun.
-              TYPES: BEGIN OF ty_travel,
-                       travel_id   TYPE /dmo/travel_id,
-                       agency_id   TYPE /dmo/agency_id,
-                       total_price TYPE /dmo/total_price,
-                     END OF ty_travel.
-              TYPES tt_travel TYPE TABLE OF ty_travel.
-              METHODS process_travels RETURNING VALUE(rt_result) TYPE tt_travel.
-          ENDCLASS.
-          
-          CLASS zcl_travel_processor IMPLEMENTATION.
-            METHOD if_oo_adt_classrun~main.
-              DATA(lt_travels) = process_travels( ).
-              out->write( |Processed { lines( lt_travels ) } travel records| ).
-            ENDMETHOD.
-          
-            METHOD process_travels.
-              SELECT travel_id, agency_id, total_price
-                     FROM /dmo/i_travel
-                     WHERE overall_status = 'A'
-                     INTO TABLE @rt_result.
-            ENDMETHOD.
-          ENDCLASS."></code></pre>
-        </div>
+      <div class="tags">
+        <span class="tag">AI in Education</span>
+        <span class="tag">ChatGPT</span>
+        <span class="tag">History Education</span>
+        <span class="tag">Machine Learning</span>
+        <span class="tag">Classroom Study</span>
+        <span class="tag">Austria</span>
       </div>
 
-      <!-- Another Code Example -->
-      <div class="code-editor" style="margin-top: 3rem">
-        <div class="editor-header">
-          <span class="editor-title">simple_loop.abap</span>
-          <div class="editor-buttons">
-            <button class="editor-btn close"></button>
-            <button class="editor-btn minimize"></button>
-            <button class="editor-btn maximize"></button>
-          </div>
+      <div class="stats-row">
+        <div class="stat">
+          <span class="label">Venue</span>
+          <span class="value">LNCS / HCI International</span>
         </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
-
-          <pre><code id="typing-code-2" class="scroll-typing" data-code="* Einfaches Loop-Beispiel mit moderner Syntax
-            DATA: lt_numbers TYPE TABLE OF i.
-            lt_numbers = VALUE #( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
-            
-            DATA(lv_sum) = REDUCE i( INIT sum = 0 
-              FOR num IN lt_numbers 
-              NEXT sum = sum + num ).
-            
-            out->write( |Summe: { lv_sum }| )."></code></pre>
+        <div class="stat">
+          <span class="label">Affiliations</span>
+          <span class="value">TU Wien · TU Graz</span>
         </div>
-      </div>
-
-      <!-- Interactive Code Box -->
-      <div class="interactive-code">
-        <h3>Interaktiver ABAP-Code-Trainer</h3>
-        <p>
-          Schreiben Sie ABAP-Code und klicken Sie auf "Ausführen" für eine
-          simulierte Ausgabe (einfache Syntax-Überprüfung).
-        </p>
-        <textarea id="code-input">
-* Ihr Code hier...
-DATA(lv_hello) = 'Hello ABAP!'.
-out->write( lv_hello ).</textarea
-        >
-        <button class="run-btn" onclick="runCode()">Ausführen</button>
-        <div class="output" id="code-output"></div>
-      </div>
-    </section>
-
-    <!-- Videos Section - Added example videos -->
-    <section id="videos" class="fade-in">
-      <h2 class="section-title">Lernvideos</h2>
-      <div class="video-grid">
-        <div class="video-card">
-          <div class="video-thumbnail">
-            <div class="play-icon"></div>
-          </div>
-          <div class="video-info">
-            <h4 class="video-title">ABAP Basics Tutorial</h4>
-            <span class="video-duration">15:32</span>
-          </div>
+        <div class="stat">
+          <span class="label">Sample</span>
+          <span class="value">n = 22</span>
         </div>
-        <div class="video-card">
-          <div class="video-thumbnail">
-            <div class="play-icon"></div>
-          </div>
-          <div class="video-info">
-            <h4 class="video-title">CDS Views Deep Dive</h4>
-            <span class="video-duration">28:45</span>
-          </div>
-        </div>
-        <div class="video-card">
-          <div class="video-thumbnail">
-            <div class="play-icon"></div>
-          </div>
-          <div class="video-info">
-            <h4 class="video-title">Performance Tips</h4>
-            <span class="video-duration">12:10</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Blog Section - Added 2 example entries with code -->
-    <section id="blog" class="fade-in">
-      <h2 class="section-title">Blog</h2>
-      <div class="blog-grid">
-        <div class="blog-card">
-          <div class="blog-header">
-            <span class="blog-category">ABAP Tips</span>
-          </div>
-          <div class="blog-content">
-            <h4 class="blog-title">Moderne ABAP Features nutzen</h4>
-            <p class="blog-excerpt">
-              Entdecken Sie, wie Sie mit Inline-Deklarationen und Expressions
-              Ihren Code sauberer machen. Hier ein kurzes Beispiel:
-            </p>
-            <div class="blog-code-snippet">
-              <pre><code><span class="comment">* Inline Declaration</span>
-<span class="keyword">DATA</span>(lv_text) = <span class="string">'Modern ABAP'</span>.
-out->write( lv_text ).</code></pre>
-            </div>
-            <div class="blog-meta">
-              <span>23.08.2025</span>
-              <span>5 min read</span>
-            </div>
-          </div>
-        </div>
-        <div class="blog-card">
-          <div class="blog-header">
-            <span class="blog-category">SAP News</span>
-          </div>
-          <div class="blog-content">
-            <h4 class="blog-title">S/4HANA Migration Tricks</h4>
-            <p class="blog-excerpt">
-              Tipps zur reibungslosen Migration. Probieren Sie diesen
-              CDS-View-Code aus:
-            </p>
-            <div class="blog-code-snippet">
-              <pre><code><span class="keyword">@AbapCatalog.sqlViewName</span>: 'ZVIEW_TRAVEL'
-<span class="keyword">@EndUserText.label</span>: 'Travel View'
-<span class="keyword">define view</span> Z_Travel_View <span class="keyword">as select from</span> /dmo/travel {
-  travel_id,
-  agency_id,
-  total_price
-}</code></pre>
-            </div>
-            <div class="blog-meta">
-              <span>15.08.2025</span>
-              <span>7 min read</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-      <div class="footer-content">
-        <p>&copy; 2025 ABAP.dev - Alle Rechte vorbehalten</p>
-        <div class="social-links">
-          <a href="#" class="social-link">📘</a>
-          <a href="#" class="social-link">🐦</a>
-          <a href="#" class="social-link">📺</a>
-          <a href="#" class="social-link">💼</a>
-        </div>
-      </div>
-    </footer>
-    <div id="ai-chat-widget" class="chat-widget">
-      <div class="chat-header" onclick="toggleChat()">
-        <span>🤖 ABAP Co-Pilot</span>
-        <span class="chat-toggle-icon">-</span>
-      </div>
-
-      <div class="chat-header" onclick="toggleChat()">
-        <span class="header-title">🤖 ABAP Co-Pilot</span>
-        <span class="chat-toggle-icon">-</span>
-      </div>
-
-      <div class="chat-main-content">
-        <div class="chat-body">
-          <div class="chat-message bot">
-            Hallo! Ich bin dein ABAP Co-Pilot. Stell mir eine Frage oder sende
-            mir Code zur Analyse.
-          </div>
-        </div>
-
-        <div class="chat-input-area">
-          <div class="chat-toolbar">
-            <button
-              id="btn-text-mode"
-              class="toolbar-btn active"
-              onclick="switchMode('text')"
-            >
-              Text
-            </button>
-            <button
-              id="btn-code-mode"
-              class="toolbar-btn"
-              onclick="switchMode('code')"
-            >
-              Code
-            </button>
-            <label for="file-upload" class="toolbar-btn file-btn">
-              <span>⬆️ Upload</span>
-              <input type="file" id="file-upload" style="display: none" />
-            </label>
-          </div>
-
-          <div id="text-input-container">
-            <textarea placeholder="Stelle eine Frage..."></textarea>
-          </div>
-          <div id="code-input-container" style="display: none">
-            <div
-              class="chat-code-editor"
-              contenteditable="true"
-              spellcheck="false"
-            ></div>
-          </div>
-
-          <button class="send-btn">Senden</button>
+        <div class="stat">
+          <span class="label">Method</span>
+          <span class="value">Welch's t-test</span>
         </div>
       </div>
     </div>
-    <script>
-      // Theme Toggle
-      // Burger Menu Toggle
-      function toggleMenu() {
-        const burger = document.querySelector(".burger-menu");
-        const navLinks = document.querySelector(".nav-links");
+  </article>
 
-        burger.classList.toggle("active");
-        navLinks.classList.toggle("active");
+  <!-- Divider for future papers -->
+  <div class="section-divider">
+    <span>More coming soon</span>
+  </div>
 
-        // Body scroll verhindern wenn Menu offen
-        document.body.style.overflow = navLinks.classList.contains("active")
-          ? "hidden"
-          : "auto";
+</main>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2025 John Tusha · Built with care in Vienna</p>
+</footer>
+
+<script>
+  // Shimmer follow effect
+  function updateShimmer(e, card) {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mx', x + '%');
+    card.style.setProperty('--my', y + '%');
+  }
+  function resetShimmer(card) {
+    card.style.setProperty('--mx', '50%');
+    card.style.setProperty('--my', '50%');
+  }
+
+  // Expand / collapse abstract
+  function toggleAbstract(id, btn) {
+    const el = document.getElementById(id);
+    const expanded = el.classList.toggle('expanded');
+    btn.classList.toggle('expanded', expanded);
+    btn.firstChild.textContent = expanded ? 'Show less ' : 'Read more ';
+  }
+
+  // Intersection observer for scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
       }
+    });
+  }, { threshold: 0.1 });
 
-      // Menu schließen beim Klick auf einen Link
-      document.querySelectorAll(".nav-links a").forEach((link) => {
-        link.addEventListener("click", () => {
-          document.querySelector(".burger-menu").classList.remove("active");
-          document.querySelector(".nav-links").classList.remove("active");
-          document.body.style.overflow = "auto";
-        });
-      });
-      function toggleTheme() {
-        document.body.dataset.theme =
-          document.body.dataset.theme === "dark" ? "" : "dark";
-        document.querySelector(".theme-toggle").textContent =
-          document.body.dataset.theme === "dark" ? "☀️" : "🌙";
-      }
+  document.querySelectorAll('.paper-card').forEach(card => {
+    card.style.animationPlayState = 'paused';
+    observer.observe(card);
+  });
+</script>
 
-      // Copy Code
-      function copyCode(btn) {
-        const code = btn.parentElement.querySelector("pre code").innerText;
-        navigator.clipboard.writeText(code).then(() => {
-          btn.classList.add("copied");
-          btn.textContent = "Copied!";
-          setTimeout(() => {
-            btn.classList.remove("copied");
-            btn.textContent = "📋 Copy";
-          }, 2000);
-        });
-      }
-
-      // Scroll-gesteuerte Typing Animation
-      const typeAnimationObserver = new IntersectionObserver(
-        (entries, observer) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const codeElement = entry.target;
-              const codeText = codeElement.getAttribute("data-code").trim();
-              let i = 0;
-
-              codeElement.classList.add("typing"); // Cursor anzeigen
-
-              function type() {
-                if (i < codeText.length) {
-                  // HTML-Entities für < und > beibehalten, damit Syntax Highlighting nicht kaputt geht
-                  const char = codeText.charAt(i);
-                  codeElement.innerHTML += char;
-                  i++;
-                  setTimeout(type, 15); // Tipp-Geschwindigkeit
-                } else {
-                  codeElement.classList.remove("typing"); // Cursor entfernen
-                }
-              }
-              type();
-
-              observer.unobserve(codeElement); // Animation nur einmal auslösen
-            }
-          });
-        },
-        { threshold: 0.5 }
-      ); // Startet, wenn 50% des Elements sichtbar ist
-
-      document.querySelectorAll(".scroll-typing").forEach((el) => {
-        typeAnimationObserver.observe(el);
-      });
-
-      // Interactive Code Runner (Simple Simulation)
-      function runCode() {
-        const input = document.getElementById("code-input").value;
-        const output = document.getElementById("code-output");
-        // Simulierte Ausführung: Suche nach out->write und extrahiere String
-        const match = input.match(/out->write\(\s*(.*?)\s*\)/);
-        if (match) {
-          output.innerText =
-            "Simulierte Ausgabe: " + match[1].replace(/['|]/g, "");
-        } else {
-          output.innerText =
-            "Fehler: Keine gültige out->write-Anweisung gefunden.";
-        }
-      }
-
-      // Fade-in on scroll
-      const fadeElements = document.querySelectorAll(".fade-in");
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      });
-      fadeElements.forEach((el) => observer.observe(el));
-
-      // --- AI Chat Widget Logic ---
-
-      const chatWidget = document.getElementById("ai-chat-widget");
-      const textInput = document.getElementById("text-input-container");
-      const codeInput = document.getElementById("code-input-container");
-      const btnText = document.getElementById("btn-text-mode");
-      const btnCode = document.getElementById("btn-code-mode");
-
-      // Funktion zum Öffnen und Schließen des Chats
-      function toggleChat() {
-        chatWidget.classList.toggle("closed");
-        const icon = chatWidget.querySelector(".chat-toggle-icon");
-        icon.textContent = chatWidget.classList.contains("closed") ? "+" : "-";
-      }
-
-      // Funktion zum Umschalten des Eingabemodus
-      function switchMode(mode) {
-        if (mode === "text") {
-          textInput.style.display = "block";
-          codeInput.style.display = "none";
-          btnText.classList.add("active");
-          btnCode.classList.remove("active");
-        } else if (mode === "code") {
-          textInput.style.display = "none";
-          codeInput.style.display = "block";
-          btnText.classList.remove("active");
-          btnCode.classList.add("active");
-        }
-      }
-
-      // Initialzustand: Chat ist geöffnet
-      toggleChat(); // Schließt es beim ersten Laden
-      toggleChat(); // Öffnet es wieder, um den Icon-Status zu setzen
-    </script>
-  </body>
+</body>
 </html>
