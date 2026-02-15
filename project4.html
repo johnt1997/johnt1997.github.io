@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Instagram Auto Unliker</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500;700&display=swap');
 
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
@@ -104,7 +104,7 @@
     position: relative; z-index: 1;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 60px 24px 80px;
+    padding: 100px 24px 80px;
   }
 
   /* === HERO === */
@@ -446,6 +446,74 @@
   }
   .footer a:hover { text-decoration: underline }
 
+  /* === NAVIGATION === */
+  .site-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    background: rgba(10,10,15,0.7);
+    border-bottom: 1px solid var(--glass-border);
+    transition: background 0.4s;
+  }
+  .site-nav .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #7eb8f7, #c4a1f7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+  }
+  .site-nav .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .site-nav .nav-links a {
+    text-decoration: none; color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; transition: color 0.3s;
+    position: relative;
+  }
+  .site-nav .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1.5px;
+    background: linear-gradient(90deg, #7eb8f7, #c4a1f7);
+    transition: width 0.3s ease;
+  }
+  .site-nav .nav-links a:hover { color: var(--text-primary); }
+  .site-nav .nav-links a:hover::after { width: 100%; }
+  .site-nav .nav-links a.active { color: #7eb8f7; }
+  .site-nav .nav-links a.active::after { width: 100%; }
+  .nav-dropdown { position: relative; }
+  .nav-dropdown-menu {
+    position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    list-style: none; padding: 0.5rem 0;
+    background: rgba(16,16,31,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    min-width: 180px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .nav-dropdown-menu::before {
+    content: '';
+    position: absolute; top: -12px; left: 0; right: 0; height: 12px;
+  }
+  .nav-dropdown:hover .nav-dropdown-menu {
+    opacity: 1; pointer-events: auto;
+    transform: translateX(-50%) translateY(8px);
+  }
+  .nav-dropdown-menu a {
+    display: block; padding: 0.5rem 1.2rem;
+    font-size: 0.82rem; text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-dropdown-menu a:hover {
+    background: rgba(126,184,247,0.08);
+  }
+
   /* === SCROLL REVEAL === */
   .reveal {
     opacity: 0;
@@ -459,6 +527,9 @@
 
   /* === RESPONSIVE === */
   @media (max-width: 640px) {
+    .site-nav { padding: 1rem 1.5rem; }
+    .site-nav .nav-links { gap: 1.5rem; }
+    .site-nav .nav-links a { font-size: 0.75rem; }
     .hero { padding: 48px 24px }
     .page-content { padding: 40px 16px 60px }
     .features-grid { grid-template-columns: 1fr }
@@ -468,6 +539,26 @@
 </style>
 </head>
 <body>
+
+<!-- Navigation -->
+<nav class="site-nav">
+  <a href="index.html" class="logo">John Tusha</a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#papers">Papers</a></li>
+    <li><a href="sap-experience.html">SAP Experience</a></li>
+    <li class="nav-dropdown">
+      <a href="#" class="active">Projects</a>
+      <ul class="nav-dropdown-menu">
+        <li><a href="project1.html">Guinness Rater</a></li>
+        <li><a href="project2.html">Flight Scraper</a></li>
+        <li><a href="project3.html">ALiVE Chatbot</a></li>
+        <li><a href="project4.html">Instagram Unliker</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+</nav>
 
 <!-- BACKGROUND -->
 <div class="bg-scene">
