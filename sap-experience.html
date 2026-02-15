@@ -273,14 +273,69 @@ body {
 footer{position:relative;z-index:2;text-align:center;padding:3rem 2rem 2rem;border-top:1px solid var(--border);max-width:1200px;margin:3rem auto 0;}
 footer p{font-size:.75rem;color:var(--text-muted);font-family:var(--font-code);letter-spacing:.05em;}
 
+/* ── Burger Menu ── */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 101;
+}
+.burger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.burger.open span:nth-child(2) { opacity: 0; }
+.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 /* ── Responsive ── */
 @media(max-width:900px){
   .stats-bar{grid-template-columns:repeat(2,1fr);}
   .detail-grid{grid-template-columns:1fr;}
   .viz-container{grid-template-columns:1fr;}
   .site-nav{padding:1rem 1.5rem;}
-  .site-nav .nav-links{gap:1.5rem;}
-  .site-nav .nav-links a{font-size:.75rem;}
+  .burger{display:flex;}
+  .site-nav .nav-links{
+    display:none;
+    position:fixed;
+    top:60px;
+    left:0;
+    right:0;
+    flex-direction:column;
+    background:rgba(6,6,16,0.95);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    padding:1.5rem 2rem;
+    gap:0;
+    border-bottom:1px solid var(--border);
+  }
+  .site-nav .nav-links.open{display:flex;}
+  .site-nav .nav-links li{list-style:none;}
+  .site-nav .nav-links a{
+    font-size:0.9rem;
+    display:block;
+    padding:0.75rem 0;
+  }
+  .nav-dropdown-menu{
+    position:static !important;
+    transform:none !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    background:transparent;
+    border:none;
+    backdrop-filter:none;
+    padding:0 0 0 1rem;
+    min-width:auto;
+  }
   .card-body{padding:1.8rem 1.5rem;}
 }
 @media(max-width:600px){
@@ -298,6 +353,9 @@ footer p{font-size:.75rem;color:var(--text-muted);font-family:var(--font-code);l
 
 <nav class="site-nav">
   <a href="index.html" class="logo">John Tusha</a>
+  <button class="burger" aria-label="Menu" onclick="document.querySelector('.site-nav .nav-links').classList.toggle('open'); this.classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
   <ul class="nav-links">
     <li><a href="index.html#about">About</a></li>
     <li><a href="index.html#papers">Papers</a></li>
