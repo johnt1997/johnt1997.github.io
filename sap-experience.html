@@ -363,6 +363,7 @@ footer p{font-size:.75rem;color:var(--text-muted);font-family:var(--font-code);l
     <li class="nav-dropdown">
       <a href="#">Projects</a>
       <ul class="nav-dropdown-menu">
+        <li><a href="ius-romanum.html">Ius Romanum</a></li>
         <li><a href="project1.html">Guinness Rater</a></li>
         <li><a href="project2.html">Flight Scraper</a></li>
         <li><a href="project3.html">ALiVE Chatbot</a></li>
@@ -467,6 +468,415 @@ footer p{font-size:.75rem;color:var(--text-muted);font-family:var(--font-code);l
         </div>
       </div>
     </article>
+
+    <!-- 6: Z_MWI_CDS_VIEWER -->
+    <article class="project-card" onmousemove="updateShimmer(event,this)" onmouseleave="resetShimmer(this)">
+      <div class="shimmer"></div>
+      <div class="card-body">
+        <div class="card-header">
+          <div class="meta">
+            <h3>Z_MWI_CDS_VIEWER — Dynamic CDS Inspector</h3>
+            <div class="subtitle">Self-built generic CDS view explorer with CSV export, multi-view orchestration, and Buchungskreis range iteration</div>
+          </div>
+          <span class="impact-badge complex">Self-Designed</span>
+        </div>
+        <div class="card-desc">
+          During CoRep/FinRep development we constantly needed to inspect CDS view output against production data — but SE16 doesn't handle CDS entities well, and dumping each view manually was killing iteration speed. I designed a generic ABAP report that takes any CDS view name, dynamically resolves its field catalog at runtime via RTTI, executes the SELECT, and streams results to CSV through a dedicated exporter class. Add multi-view selection, Buchungskreis range iteration (KA + Altor in one run), automatic filename generation, and a global row limit (<code style="font-family:var(--font-code);font-size:.78rem;color:var(--glow-amber);background:rgba(251,191,36,0.06);padding:.05rem .35rem;border-radius:3px;">p_maxrow</code>) that applies across all company-code iterations — and you have a tool the entire team now uses for regression testing and data investigation.
+        </div>
+
+        <!-- ── Interactive Viewer Emulation ── -->
+        <div class="cds-viewer">
+          <div class="cds-titlebar">
+            <span>◆ Z_MWI_CDS_VIEWER — Selection Screen</span>
+            <span>SE38 | Client 200</span>
+          </div>
+
+          <!-- Selection Screen -->
+          <div class="cds-selection">
+            <div class="cds-field-group">
+              <label class="cds-label">CDS View Name</label>
+              <select id="cdsViewSelect" class="cds-input" onchange="renderCdsResults()">
+                <option value="ZI_MW_IFRS_OVERVIEW">ZI_MW_IFRS_OVERVIEW</option>
+                <option value="ZI_MW_IFRS_CALC_ATTR">ZI_MW_IFRS_CALC_ATTR</option>
+                <option value="ZI_NSFR_FUNDING_LEDGER">ZI_NSFR_FUNDING_LEDGER</option>
+              </select>
+            </div>
+
+            <div class="cds-field-row">
+              <div class="cds-field-group">
+                <label class="cds-label">BUKRS (from)</label>
+                <input class="cds-input" type="text" value="0202" readonly>
+              </div>
+              <div class="cds-field-group">
+                <label class="cds-label">BUKRS (to)</label>
+                <input class="cds-input" type="text" value="0203" readonly>
+              </div>
+              <div class="cds-field-group">
+                <label class="cds-label">p_maxrow</label>
+                <input class="cds-input" type="text" value="50" readonly>
+              </div>
+            </div>
+
+            <div class="cds-field-group cds-radio-group">
+              <label class="cds-label">Entity</label>
+              <div class="cds-radios">
+                <label class="cds-radio"><input type="radio" name="entity" checked> <span>KA — Kommunalkredit</span></label>
+                <label class="cds-radio"><input type="radio" name="entity"> <span>AL — Altor</span></label>
+                <label class="cds-radio"><input type="radio" name="entity"> <span>Both</span></label>
+              </div>
+            </div>
+
+            <div class="cds-action-bar">
+              <button class="cds-btn cds-btn-primary" onclick="executeCds()">▶ Execute (F8)</button>
+              <button class="cds-btn" onclick="downloadCsv()">⬇ Download CSV</button>
+              <span class="cds-hint" id="cdsHint">Press Execute to populate result grid</span>
+            </div>
+          </div>
+
+          <!-- Result Grid -->
+          <div class="cds-result" id="cdsResult">
+            <div class="cds-result-header">
+              <span id="cdsResultTitle">Result Preview — <span style="color:var(--glow-blue)">ZI_MW_IFRS_OVERVIEW</span></span>
+              <span id="cdsResultMeta">— rows</span>
+            </div>
+            <div class="cds-result-grid">
+              <table id="cdsTable">
+                <thead id="cdsThead"></thead>
+                <tbody id="cdsTbody"></tbody>
+              </table>
+            </div>
+            <div class="cds-result-footer">
+              <span id="cdsFilename" class="cds-filename">ZI_MW_IFRS_OVERVIEW_KA_20260520.csv</span>
+              <span id="cdsStatus" class="cds-status-text"><span class="ready-dot"></span> Ready</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <span class="lang">ABAP — Global Row Limit with UP TO 0 ROWS Fix</span>
+          </div>
+          <div class="code-content"><pre><span class="cm">" Global cap across ALL Buchungskreis iterations, not per-loop</span>
+<span class="kw">DATA</span>(lv_remaining) = p_maxrow.
+
+<span class="kw">LOOP AT</span> lt_bukrs_range <span class="kw">INTO DATA</span>(ls_bukrs).
+
+  <span class="cm">" Edge case: when remaining hits 0, UP TO 0 ROWS in OpenSQL</span>
+  <span class="cm">" means UNLIMITED — not zero. Explicit guard required.</span>
+  <span class="kw">IF</span> p_maxrow <span class="kw">&gt;</span> <span class="num">0</span> <span class="kw">AND</span> lv_remaining <span class="kw">&lt;=</span> <span class="num">0</span>.
+    <span class="kw">EXIT</span>.
+  <span class="kw">ENDIF</span>.
+
+  <span class="cm">" Dynamic SELECT over arbitrary CDS view</span>
+  <span class="kw">SELECT</span> <span class="kw">*</span> <span class="kw">FROM</span> (lv_cds_view_name)
+    <span class="kw">INTO TABLE</span> <span class="kw">@DATA</span>(lt_chunk)
+    <span class="kw">WHERE</span> bukrs <span class="kw">=</span> <span class="kw">@</span>ls_bukrs-low
+    <span class="kw">UP TO</span> <span class="kw">@</span>lv_remaining <span class="kw">ROWS</span>.
+
+  lv_remaining = lv_remaining <span class="kw">-</span> <span class="fn">lines</span>( lt_chunk ).
+
+  <span class="fn">go_exporter</span>-&gt;<span class="fn">append_rows</span>(
+    iv_view_name = lv_cds_view_name
+    it_data      = lt_chunk ).
+
+<span class="kw">ENDLOOP</span>.
+
+<span class="fn">go_exporter</span>-&gt;<span class="fn">write_to_app_server</span>( lv_filename ). <span class="cm">" e.g. ZI_MW_IFRS_OVERVIEW_KA_20260520.csv</span></pre>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><div class="d-label">Architecture</div><div class="d-value">Generic report + class-based CSV exporter</div></div>
+          <div class="detail-item"><div class="d-label">Key Tech</div><div class="d-value">RTTI, dynamic OpenSQL, ranges, field-symbols</div></div>
+          <div class="detail-item"><div class="d-label">Entities</div><div class="d-value">KA + Altor radio buttons, BUKRS ranges</div></div>
+          <div class="detail-item"><div class="d-label">Adoption</div><div class="d-value">Now standard tool for CDS regression testing</div></div>
+        </div>
+
+        <div class="tags">
+          <span class="tag">CDS Views</span><span class="tag">Dynamic SQL</span><span class="tag">RTTI</span><span class="tag">CSV Export</span><span class="tag">ABAP OO</span><span class="tag">Internal Tooling</span>
+        </div>
+      </div>
+    </article>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     CSS — paste this inside the existing <style> tag in the head section
+     (just before the closing </style>)
+     ════════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── CDS Viewer Emulation ── */
+.cds-viewer{
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(77,166,255,0.12);
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:1.8rem;
+}
+.cds-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.6rem 1.2rem;
+  background:rgba(0,40,100,0.25);
+  border-bottom:1px solid rgba(77,166,255,0.15);
+  font-family:var(--font-code);
+  font-size:.7rem;letter-spacing:.08em;
+  color:var(--glow-blue);
+}
+.cds-selection{
+  padding:1.2rem 1.4rem;
+  display:flex;flex-direction:column;gap:1rem;
+  background:rgba(255,255,255,0.012);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.cds-field-group{display:flex;flex-direction:column;gap:.35rem;}
+.cds-field-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;}
+.cds-label{
+  font-family:var(--font-code);
+  font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-muted);
+}
+.cds-input{
+  font-family:var(--font-code);
+  font-size:.78rem;
+  padding:.5rem .75rem;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;
+  color:var(--text);
+  outline:none;
+  transition:border-color .25s;
+}
+.cds-input:focus,.cds-input:hover{border-color:rgba(77,166,255,0.3);}
+select.cds-input{cursor:pointer;appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%237eb8f7' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .8rem center;padding-right:1.8rem;
+}
+.cds-radios{display:flex;gap:1rem;flex-wrap:wrap;}
+.cds-radio{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--font-code);font-size:.72rem;
+  color:var(--text-dim);cursor:pointer;
+  padding:.35rem .7rem;
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:6px;
+  background:rgba(255,255,255,0.015);
+  transition:all .25s;
+}
+.cds-radio:hover{border-color:rgba(77,166,255,0.2);color:var(--text);}
+.cds-radio input{accent-color:var(--glow-blue);}
+.cds-action-bar{
+  display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+  padding-top:.4rem;
+  border-top:1px dashed rgba(255,255,255,0.04);
+  margin-top:.3rem;padding-top:.9rem;
+}
+.cds-btn{
+  font-family:var(--font-code);font-size:.7rem;
+  padding:.5rem 1rem;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:6px;
+  color:var(--text-dim);
+  cursor:pointer;
+  transition:all .25s;
+  letter-spacing:.04em;
+}
+.cds-btn:hover{background:rgba(77,166,255,0.08);border-color:rgba(77,166,255,0.25);color:var(--glow-blue);}
+.cds-btn-primary{
+  background:rgba(52,211,153,0.08);
+  border-color:rgba(52,211,153,0.25);
+  color:var(--glow-emerald);
+}
+.cds-btn-primary:hover{
+  background:rgba(52,211,153,0.15);
+  border-color:rgba(52,211,153,0.4);
+  color:var(--glow-emerald);
+}
+.cds-hint{
+  font-family:var(--font-code);font-size:.65rem;
+  color:var(--text-muted);
+  margin-left:auto;
+}
+.cds-result{padding:0;}
+.cds-result-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.65rem 1.2rem;
+  background:rgba(0,0,0,0.2);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  font-family:var(--font-code);font-size:.7rem;
+  color:var(--text-dim);
+}
+.cds-result-grid{
+  overflow-x:auto;
+  max-height:280px;
+  overflow-y:auto;
+}
+.cds-result-grid table{
+  width:100%;border-collapse:collapse;
+  font-family:var(--font-code);font-size:.7rem;
+}
+.cds-result-grid th{
+  position:sticky;top:0;
+  padding:.5rem .8rem;text-align:left;
+  background:rgba(10,10,25,0.95);
+  color:var(--glow-blue);
+  font-weight:500;letter-spacing:.05em;
+  border-bottom:1px solid rgba(77,166,255,0.15);
+  white-space:nowrap;
+  font-size:.64rem;text-transform:uppercase;
+}
+.cds-result-grid td{
+  padding:.45rem .8rem;
+  border-bottom:1px solid rgba(255,255,255,0.02);
+  color:var(--text-dim);
+  white-space:nowrap;
+}
+.cds-result-grid tr:hover td{background:rgba(77,166,255,0.025);}
+.cds-result-grid .num-c{text-align:right;font-variant-numeric:tabular-nums;color:var(--text);}
+.cds-result-grid .stage-1{color:var(--glow-emerald);}
+.cds-result-grid .stage-2{color:var(--glow-amber);}
+.cds-result-grid .stage-3{color:var(--glow-rose);}
+.cds-result-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.55rem 1.2rem;
+  background:rgba(0,0,0,0.15);
+  border-top:1px solid rgba(255,255,255,0.04);
+  font-family:var(--font-code);font-size:.62rem;
+}
+.cds-filename{
+  color:var(--glow-amber);
+  background:rgba(251,191,36,0.05);
+  padding:.2rem .55rem;
+  border-radius:4px;
+  border:1px solid rgba(251,191,36,0.1);
+}
+.cds-status-text{color:var(--text-muted);display:inline-flex;align-items:center;gap:.4rem;}
+.ready-dot{width:6px;height:6px;border-radius:50%;background:var(--glow-emerald);
+  box-shadow:0 0 8px var(--glow-emerald);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.cds-result.executing .cds-result-grid{opacity:.3;transition:opacity .2s;}
+
+@media(max-width:700px){
+  .cds-field-row{grid-template-columns:1fr;}
+  .cds-radios{flex-direction:column;gap:.4rem;}
+  .cds-action-bar{flex-direction:column;align-items:stretch;}
+  .cds-hint{margin-left:0;text-align:center;}
+}
+</style>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     JS — paste this inside the existing <script> tag at the bottom
+     (just before the closing </script>)
+     ════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── CDS Viewer Emulation ──
+const cdsData = {
+  ZI_MW_IFRS_OVERVIEW: {
+    columns: ['MANDT','BUKRS','GSART','PARTNR','VALUTA','NOMINAL','IMP_STAGE','EWB_BETR','EFF_ZINS'],
+    rows: [
+      ['200','0202','LOAN','3753','EUR','2500000.00','1','12500.00','3.450'],
+      ['200','0202','LOAN','12634','CHF','5000000.00','1','25000.00','2.890'],
+      ['200','0202','LOAN','16176','CHF','3826666.67','2','306133.33','4.120'],
+      ['200','0202','LOAN','8821','USD','8200000.00','2','738000.00','5.670'],
+      ['200','0202','LOAN','4502','EUR','11500000.00','3','1392633.00','8.289'],
+      ['200','0202','LOAN','7714','GBP','4150000.00','3','830000.00','6.750'],
+      ['200','0203','LOAN','9923','EUR','1800000.00','1','9000.00','3.100'],
+      ['200','0203','LOAN','5547','EUR','6300000.00','3','945000.00','7.150'],
+      ['200','0203','IBAS','3753','EUR','15000000.00','1','75000.00','2.200'],
+      ['200','0203','LOAN','11892','JPY','280000000.00','2','22400000.00','1.450'],
+    ],
+    stageCol: 6
+  },
+  ZI_MW_IFRS_CALC_ATTR: {
+    columns: ['BUKRS','GSART','INT_TYP','TYP_AL_IND','TYP_CG_EQUIV','TYP_ENTRY','IDE_LEI','RATIO_NPL','DTE_PAST_DUE'],
+    rows: [
+      ['0202','LOAN','LOAN','2','1','01','529900T8BM49AURSDO55','0.0421','—'],
+      ['0202','LOAN','LOAN','2','0','01','391200WRZAQY7CN2L809','0.1287','15.03.2025'],
+      ['0202','IBAS','IBAS','1','1','03','7437003B5WFBOIEFY714','0.0089','—'],
+      ['0202','SEC','SEC','1','1','02','9695008THRJJ8VDLZ764','0.0000','—'],
+      ['0203','LOAN','LOAN','2','0','01','—','0.0533','—'],
+      ['0203','LOAN','LOAN','2','1','01','549300F3M0SUCSV5BD20','0.0892','22.01.2026'],
+      ['0203','FUND','FUND','1','0','04','—','0.0000','—'],
+    ],
+    stageCol: -1
+  },
+  ZI_NSFR_FUNDING_LEDGER: {
+    columns: ['BUKRS','PARTNR','MATURITY_BKT','CCY','CARRYING_AMT','ASF_FACTOR','ASF_WEIGHTED','TYP_DEPOSITOR'],
+    rows: [
+      ['0202','3753','GT_1Y','EUR','125000000.00','1.00','125000000.00','RETAIL_STABLE'],
+      ['0202','12634','6M_TO_1Y','EUR','42000000.00','0.50','21000000.00','CORP_NF'],
+      ['0202','16176','LT_6M','USD','78000000.00','0.00','0.00','FI_OTHER'],
+      ['0202','8821','GT_1Y','CHF','55000000.00','1.00','55000000.00','SOVEREIGN'],
+      ['0203','4502','LT_6M','EUR','18500000.00','0.00','0.00','RETAIL_LESS_STABLE'],
+      ['0203','7714','6M_TO_1Y','GBP','32000000.00','0.50','16000000.00','CORP_NF'],
+      ['0203','9923','GT_1Y','EUR','95000000.00','1.00','95000000.00','RETAIL_STABLE'],
+    ],
+    stageCol: -1
+  }
+};
+
+function renderCdsResults(){
+  const viewName = document.getElementById('cdsViewSelect').value;
+  const data = cdsData[viewName];
+  const thead = document.getElementById('cdsThead');
+  const tbody = document.getElementById('cdsTbody');
+
+  thead.innerHTML = '<tr>' + data.columns.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  tbody.innerHTML = data.rows.map(row =>
+    '<tr>' + row.map((cell,i)=>{
+      let cls = '';
+      if (!isNaN(parseFloat(cell)) && i>2) cls = 'num-c';
+      if (i === data.stageCol) cls = 'stage-' + cell;
+      return `<td class="${cls}">${cell}</td>`;
+    }).join('') + '</tr>'
+  ).join('');
+
+  document.getElementById('cdsResultTitle').innerHTML =
+    `Result Preview — <span style="color:var(--glow-blue)">${viewName}</span>`;
+  document.getElementById('cdsResultMeta').textContent = `${data.rows.length} rows`;
+  document.getElementById('cdsFilename').textContent = `${viewName}_KA_20260520.csv`;
+}
+
+function executeCds(){
+  const result = document.getElementById('cdsResult');
+  const hint = document.getElementById('cdsHint');
+  const status = document.getElementById('cdsStatus');
+  result.classList.add('executing');
+  hint.textContent = 'Executing SELECT...';
+  status.innerHTML = '<span class="ready-dot" style="background:var(--glow-amber);box-shadow:0 0 8px var(--glow-amber)"></span> Running';
+  setTimeout(()=>{
+    renderCdsResults();
+    result.classList.remove('executing');
+    const viewName = document.getElementById('cdsViewSelect').value;
+    const rows = cdsData[viewName].rows.length;
+    hint.textContent = `${rows} rows fetched — ready to export`;
+    status.innerHTML = '<span class="ready-dot"></span> Complete';
+  }, 600);
+}
+
+function downloadCsv(){
+  const viewName = document.getElementById('cdsViewSelect').value;
+  const data = cdsData[viewName];
+  const csv = [
+    data.columns.join(';'),
+    ...data.rows.map(r => r.join(';'))
+  ].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${viewName}_KA_20260520.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  const hint = document.getElementById('cdsHint');
+  hint.textContent = `Exported ${data.rows.length} rows to CSV ✓`;
+}
+
+// Initial render on page load
+document.addEventListener('DOMContentLoaded', renderCdsResults);
+</script>
 
     <!-- 2: CoRep/FinRep CDS Migration -->
     <article class="project-card" onmousemove="updateShimmer(event,this)" onmouseleave="resetShimmer(this)">
