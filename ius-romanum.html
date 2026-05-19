@@ -127,6 +127,41 @@
     color: var(--bg-deep) !important;
   }
 
+  /* ── Dropdown ── */
+  .nav-dropdown { position: relative; }
+  .nav-dropdown-menu {
+    position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    list-style: none; padding: 0.5rem 0;
+    background: rgba(16,16,31,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    min-width: 180px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .nav-dropdown-menu::before {
+    content: ''; position: absolute;
+    top: -12px; left: 0; right: 0; height: 12px;
+  }
+  .nav-dropdown:hover .nav-dropdown-menu {
+    opacity: 1; pointer-events: auto;
+    transform: translateX(-50%) translateY(8px);
+  }
+  .nav-dropdown-menu a {
+    display: block; padding: 0.5rem 1.2rem;
+    font-size: 0.82rem; text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-dropdown-menu a:hover {
+    background: rgba(126,184,247,0.08);
+  }
+  .nav-dropdown-menu a.active {
+    color: var(--accent-gold) !important;
+  }
+  .nav-dropdown-menu a::after { display: none; }
+
   main {
     position: relative; z-index: 2;
     max-width: 1100px; margin: 0 auto;
@@ -384,6 +419,106 @@
     padding-top: 1rem;
   }
 
+  /* ── Mini-mockups (Bibliotheca + Arena) ── */
+  .mockup-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin-bottom: 5rem;
+  }
+  .mockup-card {
+    position: relative;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    padding: 2rem;
+    backdrop-filter: blur(30px) saturate(1.3);
+    overflow: hidden;
+    transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+  }
+  .mockup-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+  }
+  .mockup-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212,168,83,0.2);
+    box-shadow: 0 15px 40px -15px rgba(0,0,0,0.4), 0 0 30px -10px var(--gold-glow);
+  }
+  .mockup-card .label {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-gold); margin-bottom: 0.5rem;
+  }
+  .mockup-card h4 {
+    font-family: var(--font-display); font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .mockup-frame {
+    background: rgba(7,9,26,0.65);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    min-height: 200px;
+  }
+  /* Bibliotheca tree */
+  .biblio-tree .item {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.25rem 0;
+  }
+  .biblio-tree .chapter {
+    color: var(--accent); font-weight: 500;
+  }
+  .biblio-tree .sub {
+    padding-left: 1.4rem;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+  }
+  .biblio-tree .sub.active {
+    color: var(--accent-gold);
+    border-left: 2px solid var(--accent-gold);
+    padding-left: 1rem;
+    margin-left: 0.4rem;
+  }
+  .biblio-tree .arrow { opacity: 0.5; font-size: 0.7rem; }
+  /* Arena quiz */
+  .arena-quiz .q {
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+  }
+  .arena-quiz .opt {
+    display: block;
+    padding: 0.55rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.02);
+    margin-bottom: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+  .arena-quiz .opt:hover {
+    border-color: rgba(126,184,247,0.3);
+    color: var(--text-primary);
+  }
+  .arena-quiz .opt.correct {
+    border-color: rgba(212,168,83,0.4);
+    background: rgba(212,168,83,0.06);
+    color: var(--accent-gold);
+  }
+  .arena-quiz .opt .letter {
+    color: var(--accent);
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
   /* ── Comparison ── */
   .comparison {
     display: grid; grid-template-columns: 1fr 1fr;
@@ -637,16 +772,25 @@
 <div class="grain"></div>
 
 <nav>
-  <div class="logo">IVS ROMANVM</div>
+  <a href="index.html" class="logo">John Tusha</a>
   <button class="burger" aria-label="Menu" onclick="document.querySelector('nav .nav-links').classList.toggle('open'); this.classList.toggle('open')">
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#demo">Demo</a></li>
-    <li><a href="#why">Warum?</a></li>
-    <li><a href="#pricing">Preise</a></li>
-    <li><a href="https://ius-romanum.vercel.app" class="cta-mini" target="_blank">Live testen</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#papers">Papers</a></li>
+    <li><a href="sap-experience.html">SAP Experience</a></li>
+    <li class="nav-dropdown">
+      <a href="#" class="active">Projects</a>
+      <ul class="nav-dropdown-menu">
+        <li><a href="ius-romanum.html" class="active">Ius Romanum</a></li>
+        <li><a href="project1.html">Guinness Rater</a></li>
+        <li><a href="project2.html">Flight Scraper</a></li>
+        <li><a href="project3.html">ALiVE Chatbot</a></li>
+        <li><a href="project4.html">Instagram Unliker</a></li>
+      </ul>
+    </li>
+    <li><a href="index.html#contact">Contact</a></li>
   </ul>
 </nav>
 
@@ -725,6 +869,37 @@
         Selbst testen
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>
+    </div>
+  </section>
+
+  <!-- Mockup row: Bibliotheca + Arena -->
+  <div class="divider"><span>Auch dabei</span></div>
+  <section class="mockup-row">
+    <div class="mockup-card">
+      <div class="label">📜 Bibliotheca</div>
+      <h4>Durchblättern wie ein Lehrbuch</h4>
+      <div class="mockup-frame biblio-tree">
+        <div class="item chapter"><span class="arrow">▾</span> KAPITEL V — Kaufvertrag Teil 2</div>
+        <div class="item sub"><span class="arrow">▸</span> A. Nebenabreden (Pacta adiecta)</div>
+        <div class="item sub active"><span class="arrow">▾</span> B. Gefahrtragung (PERICULUM)</div>
+        <div class="item sub" style="padding-left: 2.4rem; font-size: 0.74rem;">1. Periculum est emptoris</div>
+        <div class="item sub" style="padding-left: 2.4rem; font-size: 0.74rem;">2. Perfekter Kauf — EMPTIO PERFECTA</div>
+        <div class="item sub" style="padding-left: 2.4rem; font-size: 0.74rem;">3. Wahlschuld (OBLIGATIO ALTERNATIVA)</div>
+        <div class="item sub"><span class="arrow">▸</span> C. Verzug — MORA</div>
+        <div class="item chapter" style="margin-top: 0.5rem;"><span class="arrow">▸</span> KAPITEL VI — Gewährleistung</div>
+      </div>
+    </div>
+
+    <div class="mockup-card">
+      <div class="label">⚔ Arena</div>
+      <h4>Quiz im Multiple-Choice-Format</h4>
+      <div class="mockup-frame arena-quiz">
+        <div class="q">Was bedeutet <em>NEMO PLUS IURIS TRANSFERRE POTEST QUAM IPSE HABET?</em></div>
+        <label class="opt"><span class="letter">A</span>Eigentum geht durch bloße Einigung über</label>
+        <label class="opt correct"><span class="letter">B</span>Niemand kann mehr Recht übertragen, als er selbst hat ✓</label>
+        <label class="opt"><span class="letter">C</span>Gutgläubiger Erwerb ist immer möglich</label>
+        <label class="opt"><span class="letter">D</span>Der Käufer trägt die Gefahr ab Vertragsschluss</label>
+      </div>
     </div>
   </section>
 
