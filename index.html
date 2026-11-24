@@ -264,6 +264,31 @@
     box-shadow: 0 0 8px var(--accent);
   }
 
+  .badge.accepted {
+    background: rgba(196,161,247,0.1);
+    border: 1px solid rgba(196,161,247,0.25);
+    color: var(--accent-warm);
+  }
+  .badge.accepted::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--accent-warm);
+    box-shadow: 0 0 8px var(--accent-warm);
+  }
+
+  /* Paper links */
+  .paper-links { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 1.8rem; }
+  .paper-link {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em;
+    padding: 0.5rem 1rem; border-radius: 100px;
+    color: var(--accent); text-decoration: none;
+    background: rgba(126,184,247,0.06);
+    border: 1px solid rgba(126,184,247,0.2);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .paper-link:hover { background: rgba(126,184,247,0.12); border-color: rgba(126,184,247,0.4); }
+  .paper-link svg { width: 14px; height: 14px; }
+
   .paper-card h2 {
     font-family: var(--font-display); font-size: 1.55rem;
     font-weight: 700; line-height: 1.35;
@@ -638,7 +663,7 @@
   <!-- About -->
   <section class="about-section">
     <div class="about-card">
-      <p>Hi, I'm John &mdash; a SAP ABAP developer based in Vienna, specializing in banking and treasury management systems. By day, I build regulatory reporting solutions for financial institutions &mdash; think IFRS 9, SA-CCR, and CDS view migrations. By night, I'm finishing my Master's at TU Graz, where my thesis explores how RAG-based chatbots can make history education more engaging.</p>
+      <p>Hi, I'm John &mdash; a SAP ABAP developer based in Vienna, specializing in banking and treasury management systems. By day, I build regulatory reporting solutions for financial institutions &mdash; think IFRS 9, SA-CCR, and CDS view migrations. By night, I'm finishing my Master's at TU Graz, where my thesis explores how RAG-based chatbots can make history education more engaging &mdash; its core results were recently <a href="#papers">accepted as a paper</a>.</p>
       <p>I enjoy building things that solve real problems, whether that's automating complex financial calculations in SAP or hacking together a flight deal scraper with Europa heatmaps and Telegram alerts. When I'm not coding, you'll probably find me playing chess, rating pints of Guinness via my self-built Flutter app, or watching football.</p>
       <p>I'm drawn to the space where enterprise software meets creative side projects, and I believe the best engineers are the ones who stay curious beyond their 9-to-5.</p>
     </div>
@@ -648,6 +673,89 @@
   <div class="papers-divider" id="papers">
     <span>Research & Publications</span>
   </div>
+
+  <!-- Paper 2 (accepted, publication forthcoming) -->
+  <article class="paper-card" onmousemove="updateShimmer(event, this)" onmouseleave="resetShimmer(this)">
+    <div class="shimmer"></div>
+    <div class="card-content">
+      <div class="badge accepted">Accepted &middot; Forthcoming</div>
+
+      <h2>Optimising Retrieval-Augmented Generation for History Education: A Systematic Cross-Corpus Pipeline Evaluation</h2>
+
+      <div class="authors">
+        <span class="author-you">John Tusha,</span>
+        <span>Christian G&uuml;tl,</span>
+        <span>Alexander Steinmaurer</span>
+      </div>
+
+      <div class="paper-meta">
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          2026
+        </span>
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Accepted paper &middot; publication forthcoming
+        </span>
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Graz &middot; Linz, Austria
+        </span>
+      </div>
+
+      <p class="paper-abstract" id="abstract-2">
+        Retrieval-Augmented Generation (RAG) is increasingly proposed as a hallucination-mitigating substrate for educational chatbots, such as for interacting with impersonated historical figures. Yet developers of such systems lack empirical guidance on which pipeline configuration to deploy. This paper presents a systematic factorial evaluation of twelve RAG pipelines, combining three chunking strategies (recursive, sentence-transformer, semantic) with two retrieval modes (dense, hybrid dense+BM25) and an optional cross-encoder reranking stage. Each configuration is evaluated on two structurally different historical text corpora: a Washington biography with longer, analytical questions, and a set of EU policy documents with shorter, factual questions. The RAGAS metrics (Faithfulness, Answer Relevancy, Context Precision, Context Recall) are applied under paired Wilcoxon tests with Holm correction and rank-biserial effect sizes. Three answer generators (Mistral 7B, GPT-3.5-turbo-instruct, Phi-3-mini-4k) are additionally compared on the strongest pipeline. Three findings stand out. First, semantic chunking shows the largest descriptive effect among the architectural choices on the Washington corpus, with medium-to-large rank-biserial effect sizes; significance after Holm correction is bounded by the sample size of n = 42. Second, a locally hosted Mistral 7B outperforms GPT-3.5-turbo-instruct on Faithfulness under identical retrieval and model-appropriate prompting (0.830 vs. 0.731, paired p = 0.013), suggesting that data-protection-friendly local deployment is not only viable but preferable for educational use. Third, the best absolute pipeline is corpus-dependent, but the dense_semantic configuration ranks first and third of twelve pipelines on the two corpora and exhibits low cross-corpus variance, making it one of the most stable default choices. The findings are distilled into a decision tree that maps deployment constraints &mdash; compute budget, privacy regime, expected query type &mdash; to recommended pipeline configurations.
+      </p>
+
+      <button class="expand-btn" onclick="toggleAbstract('abstract-2', this)">
+        Read more
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <div class="paper-links">
+        <a class="paper-link" href="Optimising_Retrieval_Augmented_Generation_for_Historical_Education_ready.pdf" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Accepted manuscript (PDF)
+        </a>
+        <a class="paper-link" href="https://github.com/johnt1997/alivev2" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Code &amp; data
+        </a>
+        <a class="paper-link" href="project3.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          ALiVE project
+        </a>
+      </div>
+
+      <div class="tags">
+        <span class="tag">Retrieval-Augmented Generation</span>
+        <span class="tag">LLMs</span>
+        <span class="tag">History Education</span>
+        <span class="tag">Semantic Chunking</span>
+        <span class="tag">RAGAS</span>
+        <span class="tag">Hallucination Mitigation</span>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <span class="label">Status</span>
+          <span class="value">Accepted</span>
+        </div>
+        <div class="stat">
+          <span class="label">Affiliations</span>
+          <span class="value">TU Graz · IT:U Austria</span>
+        </div>
+        <div class="stat">
+          <span class="label">Design</span>
+          <span class="value">12 pipelines × 2 corpora</span>
+        </div>
+        <div class="stat">
+          <span class="label">Method</span>
+          <span class="value">Wilcoxon + Holm</span>
+        </div>
+      </div>
+    </div>
+  </article>
 
   <!-- Paper 1 -->
   <article class="paper-card" onmousemove="updateShimmer(event, this)" onmouseleave="resetShimmer(this)">
@@ -668,11 +776,11 @@
       <div class="paper-meta">
         <span>
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          2024
+          2025
         </span>
         <span>
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          Lecture Notes in Computer Science · Springer
+          MIS4TEL Workshops · Springer
         </span>
         <span>
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -689,6 +797,13 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
 
+      <div class="paper-links">
+        <a class="paper-link" href="https://link.springer.com/chapter/10.1007/978-3-031-85561-0_4" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View on Springer
+        </a>
+      </div>
+
       <div class="tags">
         <span class="tag">AI in Education</span>
         <span class="tag">ChatGPT</span>
@@ -701,7 +816,7 @@
       <div class="stats-row">
         <div class="stat">
           <span class="label">Venue</span>
-          <span class="value">LNCS / HCI International</span>
+          <span class="value">MIS4TEL Workshops (14th Intl. Conf.)</span>
         </div>
         <div class="stat">
           <span class="label">Affiliations</span>

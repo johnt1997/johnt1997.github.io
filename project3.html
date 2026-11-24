@@ -471,6 +471,45 @@
       font-weight: 400;
     }
 
+    /* ── Research paper ── */
+    .paper-box {
+      margin-top: 48px;
+      padding: 36px 40px;
+    }
+    .paper-box__status {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .paper-box__title {
+      font-size: 1.3rem; font-weight: 700; line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .paper-box__authors {
+      font-size: 0.9rem; color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+    .paper-box__authors strong { color: var(--text-mid); font-weight: 600; }
+    .paper-box__findings {
+      list-style: none;
+      display: grid; gap: 12px;
+      margin-bottom: 28px;
+    }
+    .paper-box__findings li {
+      font-size: 0.92rem; line-height: 1.65;
+      color: var(--text-mid);
+      padding-left: 20px; position: relative;
+    }
+    .paper-box__findings li::before {
+      content: ''; position: absolute; left: 0; top: 0.6em;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+    }
+    .paper-box__links { display: flex; flex-wrap: wrap; gap: 12px; }
+    .paper-box__links .btn { padding: 11px 22px; font-size: 0.88rem; }
+
     /* ── Screenshot / Demo ── */
     .demo-visual {
       margin-top: 48px;
@@ -796,6 +835,9 @@
       .section {
         padding: 60px 0;
       }
+      .paper-box {
+        padding: 24px 20px;
+      }
     }
 
     /* ── Typing cursor ── */
@@ -851,7 +893,7 @@
   <!-- Hero -->
   <section class="hero">
     <div class="content">
-      <div class="hero__badge">Master Thesis Project</div>
+      <div class="hero__badge">Master Thesis &middot; Accepted Paper</div>
       <h1 class="hero__title"><span>ALiVE</span></h1>
       <p style="font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-mid); letter-spacing: 0.05em; font-weight: 300; animation: fadeInUp 0.8s ease-out 0.15s both;">
         Artificial Legacy in Virtual Environments
@@ -864,6 +906,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           View on GitHub
         </a>
+        <a href="#research" class="btn btn--ghost">Read the Research</a>
         <a href="#features" class="btn btn--ghost">Explore Features</a>
       </div>
     </div>
@@ -896,6 +939,49 @@
       <div class="stat-card glass">
         <div class="stat-card__value">2 Lang</div>
         <div class="stat-card__label">English &amp; German Support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research -->
+  <section class="section content reveal" id="research">
+    <div class="section__label">Research</div>
+    <h2 class="section__title">Which RAG Pipeline Should a History Tutor Use?</h2>
+    <p class="section__desc">
+      Building on ALiVE, my Master's thesis evaluates its retrieve&ndash;rerank&ndash;generate pipeline systematically: twelve pipeline configurations (three chunking strategies &times; dense or hybrid retrieval &times; optional cross-encoder reranking), tested on two structurally different historical corpora and scored with RAGAS under paired Wilcoxon tests with Holm correction.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-card glass">
+        <div class="stat-card__value">12</div>
+        <div class="stat-card__label">RAG pipelines, fully factorial</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-card__value">84</div>
+        <div class="stat-card__label">Evaluation questions on 2 corpora</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-card__value">+19.6%</div>
+        <div class="stat-card__label">Faithfulness: semantic vs. recursive chunking (Washington)</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-card__value">0.830</div>
+        <div class="stat-card__label">Faithfulness, local Mistral 7B (GPT-3.5: 0.731)</div>
+      </div>
+    </div>
+
+    <div class="paper-box glass">
+      <span class="paper-box__status">Accepted &middot; Publication forthcoming</span>
+      <h3 class="paper-box__title">Optimising Retrieval-Augmented Generation for History Education: A Systematic Cross-Corpus Pipeline Evaluation</h3>
+      <p class="paper-box__authors"><strong>John Tusha</strong>, Christian G&uuml;tl (TU Graz), Alexander Steinmaurer (IT:U Austria)</p>
+      <ul class="paper-box__findings">
+        <li><strong>Chunking matters most.</strong> On the analytical Washington corpus, semantic chunking shows the largest descriptive effect of all architectural choices (Faithfulness 0.724 &rarr; 0.866, medium-to-large effect size).</li>
+        <li><strong>Local beats API.</strong> A locally hosted Mistral 7B outperforms GPT-3.5-turbo-instruct on Faithfulness (0.830 vs. 0.731, paired p = 0.013) &mdash; good news for privacy-sensitive classrooms.</li>
+        <li><strong>A stable default.</strong> The best pipeline is corpus-dependent, but <code>dense_semantic</code> ranks 1st and 3rd of twelve on the two corpora with low cross-corpus variance. The results are condensed into a practitioner decision tree.</li>
+      </ul>
+      <div class="paper-box__links">
+        <a href="Optimising_Retrieval_Augmented_Generation_for_Historical_Education_ready.pdf" class="btn btn--primary" target="_blank" rel="noopener">Read the paper (PDF)</a>
+        <a href="https://github.com/johnt1997/alivev2" class="btn btn--ghost" target="_blank" rel="noopener">Code &amp; replication data</a>
       </div>
     </div>
   </section>
@@ -941,7 +1027,7 @@
         <div class="feature-card__glow"></div>
         <div class="feature-card__icon">&#128269;</div>
         <div class="feature-card__title">Hybrid Retrieval</div>
-        <p class="feature-card__text">FAISS vector search combined with BM25 lexical matching for superior document retrieval. Relevance scores provide full transparency on source quality.</p>
+        <p class="feature-card__text">FAISS vector search combined with BM25 lexical matching, plus an optional cross-encoder reranking stage. Relevance scores provide full transparency on source quality.</p>
       </div>
 
       <div class="feature-card glass">
@@ -1075,6 +1161,11 @@
         </div>
         <div class="arch-arrow">&rarr;</div>
         <div class="arch-node">
+          <div class="arch-node__label">Rerank</div>
+          <div class="arch-node__name">Cross-Encoder</div>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-node">
           <div class="arch-node__label">Generate</div>
           <div class="arch-node__name">Mistral-7B</div>
         </div>
@@ -1090,7 +1181,7 @@
   <!-- Footer -->
   <footer class="footer content">
     <p class="footer__text">
-      ALiVE &mdash; Developed by <a href="https://github.com/mrcmario" class="footer__link" target="_blank">Mario Comanici</a> as part of a Master Thesis
+      ALiVE &mdash; Originally developed by <a href="https://github.com/mrcmario" class="footer__link" target="_blank">Mario Comanici</a> as part of a Master Thesis &middot; Pipeline evaluation by <a href="https://github.com/johnt1997/alivev2" class="footer__link" target="_blank">John Tusha</a>
     </p>
   </footer>
 
